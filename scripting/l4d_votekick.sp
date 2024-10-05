@@ -16,6 +16,7 @@ public Plugin myinfo =
 	author = "alliedfront",
 	description = "Vote to kick a player, with translucent menu",
 	version = PLUGIN_VERSION,
+	url = "https://github.com/hubfront"
 };
 
 /*
@@ -36,6 +37,7 @@ public Plugin myinfo =
 	 - all actions are logged (who kick, whom kick, who tried to kick, ip/country/nick/SteamId, reason ...)
 	 - ability to black list specific users (by SteamId or nickname) to prevent them from starting the vote:
 	 * See the file: data/votekick_vote_block.txt
+	 - simple temporary bans by a file-based solution (new)
 	
 	Logfile location:
 	 - logs/vote_kick.log
