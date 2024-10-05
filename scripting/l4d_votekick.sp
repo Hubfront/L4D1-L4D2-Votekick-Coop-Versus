@@ -76,6 +76,7 @@ public Plugin myinfo =
 	 - to use the banfile: set sm_votekick_use_banfile = 1 in cfg-file . Afterwards information about adding a ban entry can be found in the automatically generated data/votekick_ban.txt file
 	
 	Credits:
+	 - D1maxa - for the initial plugin
 	 - Dragokas – much thanks for his outstanding and inspiring work on which this plugin is based
 	
 	===================================================================================================
