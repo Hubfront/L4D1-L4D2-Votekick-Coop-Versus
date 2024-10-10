@@ -49,8 +49,8 @@ public Plugin myinfo =
 	 - data/votekick_reason.txt - list of kick reasons (optionally, must be supplied with appropriate translation in file: l4d_votekick.phrases.txt).
 
 	Permissions:
-	 - by default, vote can be started by anybody (new).
-	 - alternatively, vote can be started by player with "k" (StartVote) flag. For this, set cvar sm_votekick_accessflag to "k" in cfg-file.
+	 - by default, voting can be started by anyone (customizable): 
+	   you could also restrict voting access, for example to players with the "k" (StartVote) flag (set cvar sm_votekick_accessflag to "k").
 	 - by default, vote can be vetoed or force passed by player with "d" (Ban) flag (adjustable).
 	 - ability to set minimum time to allow repeat the vote.
 	 - ability to set minimum players count to allow starting the vote.
@@ -75,7 +75,8 @@ public Plugin myinfo =
 	 - copy smx file to addons/sourcemod/plugins/
 	 - copy translations/l4d_votekick.phrases.txt file to addons/sourcemod/translations/
 	 - copy data/ .txt files to addons/sourcemod/data/
-	 - to use the banfile: set sm_votekick_use_banfile = 1 in cfg-file . Afterwards information about adding a ban entry can be found in the automatically generated data/votekick_ban.txt file
+	 - to use the banfile: set sm_votekick_use_banfile = 1 in cfg-file . 
+	   Add a player to the then automatically generated (with next map start) data/votekick_ban.txt file
 	
 	Credits:
 	 - D1maxa - for the initial plugin
