@@ -37,7 +37,8 @@ public Plugin myinfo =
 	 - all actions are logged (who kick, whom kick, who tried to kick, ip/country/nick/SteamId, reason ...)
 	 - ability to black list specific users (by SteamId or nickname) to prevent them from starting the vote:
 	 * See the file: data/votekick_vote_block.txt
-	 - simple temporary bans by a file-based solution (new)
+	 - simple temporary bans by a file-based solution:
+	 * See the file: data/votekick_ban.txt (needs cvar sm_votekick_use_banfile set to "1" in cfg-file)
 	
 	Logfile location:
 	 - logs/vote_kick.log
@@ -48,7 +49,8 @@ public Plugin myinfo =
 	 - data/votekick_reason.txt - list of kick reasons (optionally, must be supplied with appropriate translation in file: l4d_votekick.phrases.txt).
 
 	Permissions:
-	 - by default, vote can be started by player with "k" (StartVote) flag (adjustable).
+	 - by default, vote can be started by anybody (new).
+	 - alternatively, vote can be started by player with "k" (StartVote) flag. For this, set cvar sm_votekick_accessflag to "k" in cfg-file.
 	 - by default, vote can be vetoed or force passed by player with "d" (Ban) flag (adjustable).
 	 - ability to set minimum time to allow repeat the vote.
 	 - ability to set minimum players count to allow starting the vote.
@@ -111,6 +113,14 @@ public Plugin myinfo =
 	 Compatibility:
 	 - Works also with version 3.5 .txt-files in data/ and translations/ directories
 
+	4.1 (10-10-2024)
+	 - Temporary bans via banfile: Removed restriction on ban period (previously 60 days)
+	 - Temporary bans via banfile: duration can now also be defined by inserting a character string: e.g. “3d” for 3 days, “1d 12h” for 1 day 12 hours, “1h 90m” for 1 hour 90 minutes (previously only [Minutes]). 
+	   * votekick_ban.txt for details
+	 - CVARS defaults changed
+	   * sm_votekick_accessflag defaults to "" (previously "k")
+	   * sm_votekick_minplayers defaults to "1" (previously "4")
+	   * sm_votekick_minplayers_versus defaults to "1" (previously "4")
 
 	Please note: for completeness, the following changelog has been copied from Dragokas' plugin "[L4D] Votekick (no black screen)", version 3.5.
 
@@ -234,7 +244,7 @@ char FILE_ANC_BLOCK_2[PLATFORM_MAX_PATH]	= "cfg/sourcemod/anc/newnames.txt";
 
 ArrayList g_hArrayVoteBlock, g_hArrayVoteReason;
 StringMap hMapSteam, hMapPlayerName, hMapPlayerTeam, hMapBanStart, hMapBanStop, hMapBanSelfnote;
-Regex hRegexSteamid, hRegexDigitsZero, hRegexDigits;
+Regex hRegexSteamid, hRegexDigitsZero, hRegexDigits, hRegexStrDhm;
 char g_sSteam[64], g_sIP[32], g_sCountry[4], g_sName[MAX_NAME_LENGTH], g_sLog[PLATFORM_MAX_PATH];
 int g_iKickUserId, iLastTime[MAXPLAYERS+1], g_iKickTarget[MAXPLAYERS+1], g_iReason, g_iVoteIssuerTeam;
 bool g_bVeto, g_bVotepass, g_bVoteInProgress, g_bVoteDisplayed, g_bTooOften[MAXPLAYERS+1], g_bIsVersus;
@@ -255,9 +265,9 @@ public void OnPluginStart()
 	g_hCvarTimeout = CreateConVar(			"sm_votekick_timeout",			"10",			"How long (in sec.) does the vote last", CVAR_FLAGS );
 	g_hCvarAnnounceDelay = CreateConVar(	"sm_votekick_announcedelay",	"2.0",			"Delay (in sec.) between announce and vote menu appearing", CVAR_FLAGS );
 	g_hCvarKickTime = CreateConVar(			"sm_votekick_kicktime",			"3600",			"How long player will be kicked (in sec.)", CVAR_FLAGS );
-	g_hMinPlayers = CreateConVar(			"sm_votekick_minplayers",		"4",			"Minimum players present in game to allow starting vote for kick", CVAR_FLAGS );
-	g_hMinPlayersVersus = CreateConVar(		"sm_votekick_minplayers_versus","4",			"Minimum players present in team to allow starting vote for kick (Versus gamemode)", CVAR_FLAGS );
-	g_hCvarAccessFlag = CreateConVar(		"sm_votekick_accessflag",		"k",			"Admin flag required to start the vote (leave empty to allow for everybody)", CVAR_FLAGS );
+	g_hMinPlayers = CreateConVar(			"sm_votekick_minplayers",		"1",			"Minimum players present in game to allow starting vote for kick", CVAR_FLAGS );
+	g_hMinPlayersVersus = CreateConVar(		"sm_votekick_minplayers_versus","1",			"Minimum players present in team to allow starting vote for kick (Versus gamemode)", CVAR_FLAGS );
+	g_hCvarAccessFlag = CreateConVar(		"sm_votekick_accessflag",		"",				"Admin flag required to start the vote (leave empty to allow for everybody)", CVAR_FLAGS );
 	g_hCvarVetoFlag = CreateConVar(			"sm_votekick_vetoflag",			"d",			"Admin flag required to veto/votepass the vote", CVAR_FLAGS );
 	g_hCvarLog = CreateConVar(				"sm_votekick_log",				"1",			"Use logging? (1 - Yes / 0 - No)", CVAR_FLAGS );
 	g_hCvarShowKickReason = CreateConVar(	"sm_votekick_show_kick_reason",	"0",			"Allow to select kick reason? (1 - Yes / 0 - No)", CVAR_FLAGS );
@@ -283,13 +293,25 @@ public void OnPluginStart()
 	hMapSteam = new StringMap();
 	hMapPlayerName = new StringMap();
 	hMapPlayerTeam = new StringMap();
+	hMapBanStart = new StringMap();
+	hMapBanStop = new StringMap();
+	hMapBanSelfnote = new StringMap();
 
 	g_hArrayVoteBlock = new ArrayList(ByteCountToCells(MAX_NAME_LENGTH));
 	g_hArrayVoteReason = new ArrayList(ByteCountToCells(32));
 
+	// Regex to detect incorrect ban file entries -> these entries are omitted
+	hRegexSteamid = CompileRegex("^STEAM_[0-5]:[01]:\\d+$");
+	hRegexDigitsZero = CompileRegex("^\\d{0,}$");
+	hRegexDigits = CompileRegex("^\\d+$");
+	hRegexStrDhm = CompileRegex("^(?:(\\d+)[Dd])*\\s*(?:(\\d+)[Hh])*\\s*(?:(\\d+)[Mm])*$");
+
 	BuildPath(Path_SM, FILE_VOTE_BLOCK, sizeof(FILE_VOTE_BLOCK), FILE_VOTE_BLOCK);
 	BuildPath(Path_SM, FILE_VOTE_REASON, sizeof(FILE_VOTE_REASON), FILE_VOTE_REASON);
 	BuildPath(Path_SM, g_sLog, sizeof(g_sLog), "logs/vote_kick.log");
+	BuildPath(Path_SM, FILE_BAN, sizeof(FILE_BAN), FILE_BAN);
+	BuildPath(Path_SM, FILE_BAN_LASTWRITE, sizeof(FILE_BAN_LASTWRITE), FILE_BAN_LASTWRITE);
+
 	
 	char sReason[32];
 	LoadReasonList();
@@ -328,21 +350,6 @@ public void OnPluginStart()
 	g_hCvarUseBanfile.AddChangeHook(OnCvarChanged);
 	g_hCvarUseBanfileLog.AddChangeHook(OnCvarChanged);
 	
-	if ( g_hCvarUseBanfileLog.BoolValue )
-	{
-		hMapBanStart = new StringMap();
-		hMapBanStop = new StringMap();
-		hMapBanSelfnote = new StringMap();
-		
-		// Regex to detect incorrect ban entries -> these entries are omitted
-		hRegexSteamid = CompileRegex("^STEAM_[0-5]:[01]:\\d+$");
-		hRegexDigitsZero = CompileRegex("^\\d{0,}$");
-		hRegexDigits = CompileRegex("^\\d+$");
-
-		BuildPath(Path_SM, FILE_BAN, sizeof(FILE_BAN), FILE_BAN);
-		BuildPath(Path_SM, FILE_BAN_LASTWRITE, sizeof(FILE_BAN_LASTWRITE), FILE_BAN_LASTWRITE);
-	}
-
 	GetCvars();
 }
 
@@ -495,8 +502,8 @@ void LoadBanList()
 	if( iLastReadInstance 		!= (ft = GetFileTime(FILE_BAN, FileTime_LastChange)) )
 	{
 		ArrayList hArrayBan;
-		static char sTime[32], sBuffer[128], sPair[ 4 ][ 22 ];
-		static int iTime;
+		static char sTime[32], sBuffer[128], sPair[ 4 ][ 22 ], buffer[16];
+		static int iTime, iDays, iHours, iMinutes;
 
 		if (GetFileTime(FILE_BAN_LASTWRITE, FileTime_LastChange) != ft)
 			bSaveBanFile = true;	// ban file has been changed, add human-readable information using SaveBanFile()
@@ -525,8 +532,9 @@ void LoadBanList()
 					TrimString(sPair[0]); TrimString(sPair[1]); TrimString(sPair[2]); TrimString(sPair[3]);
 					
 					// Regex to detect incorrect ban entries -> these entries are omitted
-					if ( hRegexSteamid.Match( sPair[0] ) && hRegexDigitsZero.Match( sPair[1] ) && hRegexDigits.Match( sPair[2] ) )
+					if ( hRegexSteamid.Match( sPair[0] ) && hRegexDigitsZero.Match( sPair[1] ) && ( hRegexDigits.Match( sPair[2] ) || hRegexStrDhm.Match( sPair[2] ) ) )
 					{
+						// Start time
 						if (!sPair[1][0]) // no Unix time specified -> start of the ban for the player is the timestamp of the ban file
 						{
 							iTime = ft;
@@ -535,13 +543,23 @@ void LoadBanList()
 						else
 							iTime = StringToInt( sPair[1] );
 					
-						if ( iTime + iBanMinutes( StringToInt(sPair[2]) ) * 60 > GetTime() ) // active ban
+						// Ban period
+						if ( hRegexDigits.Match( sPair[2] ) ) 
+							iMinutes = StringToInt( sPair[2] );
+						else
 						{
-							if ( StringToInt(sPair[2]) > 86400 )
-								bSaveBanFile = true;
+							iDays = ( hRegexStrDhm.GetSubString( 1, buffer, sizeof(buffer), 0 ) ) ? StringToInt ( buffer ) : 0 ;
+							iHours = ( hRegexStrDhm.GetSubString( 2, buffer, sizeof(buffer), 0 ) ) ? StringToInt ( buffer ) : 0 ;
+							iMinutes = ( hRegexStrDhm.GetSubString( 3, buffer, sizeof(buffer), 0 ) ) ? StringToInt ( buffer ) : 0 ;
+							iMinutes = iDays * 1440 + iHours * 60 + iMinutes ;
+							bSaveBanFile = true;
+						}
+						
+						if ( iTime + iMinutes * 60 > GetTime() ) // active ban
+						{
 							FormatEx( sTime, sizeof(sTime), "%i", iTime );
 							hMapBanStart.SetString( sPair[0], sTime, true );
-							FormatEx( sTime, sizeof(sTime), "%i", iTime + iBanMinutes( StringToInt(sPair[2]) ) * 60 );
+							FormatEx( sTime, sizeof(sTime), "%i", iTime + iMinutes * 60 );
 							hMapBanStop.SetString( sPair[0], sTime, true );
 							hMapBanSelfnote.SetString( sPair[0], sPair[3], true );
 						}
@@ -589,15 +607,20 @@ void SaveBanList( bool bDelExpiredBan = false, const char[] sExpiredBanSteamId =
 	Handle hFile = OpenFile(FILE_BAN, "wt");
 	WriteFileLine(hFile, "// l4d_votekick: simple temporary bans");
 	WriteFileLine(hFile, "// Format:");
-	WriteFileLine(hFile, "// [Steam-ID],[Empty]OR[Unix timestamp],[Minutes],[Empty]OR[Self note]");
+	WriteFileLine(hFile, "// [Steam-ID],[Empty]OR[Unix timestamp],[Minutes]OR[d h m]OR[dhm],[Empty]OR[Self note]");
 	WriteFileLine(hFile, "// Explanation:");
-	WriteFileLine(hFile, "// Steam-ID,Start of ban,Duration in minutes,Self note (e.g. nickname of banned player)");
+	WriteFileLine(hFile, "// Steam-ID,Start of ban,Duration in minutes OR String with,Self note (e.g. nickname of banned player)");
 	WriteFileLine(hFile, "// After each file change, the Votekick plugin writes a Unix timestamp (start of ban) and adds the following");
 	WriteFileLine(hFile, "// to the end of the line: ', == Start YYYY-MM-DD HH:MM:SS<->Stop YYYY-MM-DD HH:MM:SS'");
 	WriteFileLine(hFile, "// Examples:");
-	WriteFileLine(hFile, "// STEAM_1:0:12345678,,360,			= most simple: Start of ban: now, duration: 360 minutes (6h), self note: none");
-	WriteFileLine(hFile, "// STEAM_1:0:12345678,,1440,Dagobert Duck	= Start of ban: now, duration 1440m (1d), self note: Dagobert Duck");
-	WriteFileLine(hFile, "// STEAM_1:1:12345678,1713214999,4320,Goofy 	= Start 2024-04-15 23:03:19, duration: 4320m (3d), self note: Goofy");
+	WriteFileLine(hFile, "// STEAM_1:0:12345678,,360,				= Start of ban: now, duration: 360 minutes (6h), self note: none");
+	WriteFileLine(hFile, "// STEAM_1:0:12345678,,360m,				= same result as above");
+	WriteFileLine(hFile, "// STEAM_1:0:12345678,,1440,Dagobert			= Start of ban: now, duration 1440m (1d), self note: Dagobert");
+	WriteFileLine(hFile, "// STEAM_1:0:12345678,,1d,Dagobert			= same result as above");
+	WriteFileLine(hFile, "// STEAM_1:0:12345678,,24h,Dagobert			= same result as above");
+	WriteFileLine(hFile, "// STEAM_1:1:12345678,1713214999,4320,Donald 		= Start 2024-04-15 23:03:19, duration: 4320m (3d), self note: Donald");
+	WriteFileLine(hFile, "// STEAM_1:1:12345678,1713214999,2d 24h,Donald 		= same result as above");
+	WriteFileLine(hFile, "// STEAM_1:1:12345678,1713214999,1d 24h 1440m,Donald	= same result as above");
 	WriteFileLine(hFile, "//-------------------//");
 
 	StringMapSnapshot hSnap = hMapBanStart.Snapshot();
@@ -1638,12 +1661,4 @@ stock char[] SecsToDays(int iSeconds)
 	Format(sDays,sizeof(sDays),"%i days %i hours %i minutes", iDays, iHours, iMinutes); 
 	
 	return sDays;
-}
-
-int iBanMinutes(int minutes)
-{
-	if ( minutes <= 86400 )
-		return minutes;
-	else
-		return 86400;
 }
