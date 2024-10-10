@@ -117,7 +117,7 @@ public Plugin myinfo =
 	 - Temporary bans via banfile: Removed restriction on ban period (previously 60 days)
 	 - Temporary bans via banfile: duration can now also be defined by inserting a character string: e.g. “3d” for 3 days, “1d 12h” for 1 day 12 hours, “1h 90m” for 1 hour 90 minutes (previously only [Minutes]). 
 	   * votekick_ban.txt for details
-	 - CVARS defaults changed
+	 - CVARS defaults changed. Reason: Easier access to voting
 	   * sm_votekick_accessflag defaults to "" (previously "k")
 	   * sm_votekick_minplayers defaults to "1" (previously "4")
 	   * sm_votekick_minplayers_versus defaults to "1" (previously "4")
