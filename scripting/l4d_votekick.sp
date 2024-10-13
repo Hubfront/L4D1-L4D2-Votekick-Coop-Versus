@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "4.0"
+#define PLUGIN_VERSION "4.1"
 
 #pragma newdecls required
 #pragma semicolon 1
