@@ -26,7 +26,9 @@ Features:
         * See the file: data/votekick_vote_block.txt
 
     - auto-add to deny list the users from the "newnames.txt" file in Auto-Name-Changer by Exle plugin.
-    - simple temporary bans by a file-based solution (new)
+    - simple temporary bans by a file-based solution:
+
+        * See the file: data/votekick_vote_block.txt
 
 Logfile location:
 
