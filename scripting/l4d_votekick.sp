@@ -123,6 +123,9 @@ public Plugin myinfo =
 	   * sm_votekick_minplayers defaults to "1" (previously "4")
 	   * sm_votekick_minplayers_versus defaults to "1" (previously "4")
 
+	4.2 (19-10-2024)
+	 - Code optimizations
+	 
 	Please note: for completeness, the following changelog has been copied from Dragokas' plugin "[L4D] Votekick (no black screen)", version 3.5.
 
 	"Plugin is initially based on the work of D1maxa.
@@ -294,25 +297,13 @@ public void OnPluginStart()
 	hMapSteam = new StringMap();
 	hMapPlayerName = new StringMap();
 	hMapPlayerTeam = new StringMap();
-	hMapBanStart = new StringMap();
-	hMapBanStop = new StringMap();
-	hMapBanSelfnote = new StringMap();
 
 	g_hArrayVoteBlock = new ArrayList(ByteCountToCells(MAX_NAME_LENGTH));
 	g_hArrayVoteReason = new ArrayList(ByteCountToCells(32));
 
-	// Regex to detect incorrect ban file entries -> these entries are omitted
-	hRegexSteamid = CompileRegex("^STEAM_[0-5]:[01]:\\d+$");
-	hRegexDigitsZero = CompileRegex("^\\d{0,}$");
-	hRegexDigits = CompileRegex("^\\d+$");
-	hRegexStrDhm = CompileRegex("^(?:(\\d+)[Dd])*\\s*(?:(\\d+)[Hh])*\\s*(?:(\\d+)[Mm])*$");
-
 	BuildPath(Path_SM, FILE_VOTE_BLOCK, sizeof(FILE_VOTE_BLOCK), FILE_VOTE_BLOCK);
 	BuildPath(Path_SM, FILE_VOTE_REASON, sizeof(FILE_VOTE_REASON), FILE_VOTE_REASON);
 	BuildPath(Path_SM, g_sLog, sizeof(g_sLog), "logs/vote_kick.log");
-	BuildPath(Path_SM, FILE_BAN, sizeof(FILE_BAN), FILE_BAN);
-	BuildPath(Path_SM, FILE_BAN_LASTWRITE, sizeof(FILE_BAN_LASTWRITE), FILE_BAN_LASTWRITE);
-
 	
 	char sReason[32];
 	LoadReasonList();
@@ -352,6 +343,22 @@ public void OnPluginStart()
 	g_hCvarUseBanfileLog.AddChangeHook(OnCvarChanged);
 	
 	GetCvars();
+	
+	if ( g_hCvarUseBanfileLog.IntValue == 1 )
+	{
+		hMapBanStart = new StringMap();
+		hMapBanStop = new StringMap();
+		hMapBanSelfnote = new StringMap();
+
+		// Regex to detect incorrect ban file entries -> these entries are omitted
+		hRegexSteamid = CompileRegex("^STEAM_[0-5]:[01]:\\d+$");
+		hRegexDigitsZero = CompileRegex("^\\d{0,}$");
+		hRegexDigits = CompileRegex("^\\d+$");
+		hRegexStrDhm = CompileRegex("^(?:(\\d+)[ ]*[Dd])*[ ]*(?:(\\d+)[ ]*[Hh])*[ ]*(?:(\\d+)[ ]*[Mm])*$");
+
+		BuildPath(Path_SM, FILE_BAN, sizeof(FILE_BAN), FILE_BAN);
+		BuildPath(Path_SM, FILE_BAN_LASTWRITE, sizeof(FILE_BAN_LASTWRITE), FILE_BAN_LASTWRITE);
+	}
 }
 
 public void OnCvarChangedVoteKickMenu(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -499,7 +506,7 @@ void LoadBanList()
 	}
 
 	// if there is a timestamp difference of ban file to iLastReadInstance (= probably due to changed ban entries)
-	// -> reload ban file into memory and then rewrite ban file (e.g. adding human-readable Information)	
+	// -> reload ban file into memory. Rewrite ban file (e.g. adding human-readable Information) then, if its timestamp differs from FILE_BAN_LASTWRITE
 	if( iLastReadInstance 		!= (ft = GetFileTime(FILE_BAN, FileTime_LastChange)) )
 	{
 		ArrayList hArrayBan;
@@ -509,7 +516,7 @@ void LoadBanList()
 		if (GetFileTime(FILE_BAN_LASTWRITE, FileTime_LastChange) != ft)
 			bSaveBanFile = true;	// ban file has been changed, add human-readable information using SaveBanFile()
 		else
-			// Another server instance of this plugin has loaded the ban file and called SaveBanList() in order to add human-readable information to the file
+			// Another server instance of this plugin had loaded the ban file and had called SaveBanList() in order to add human-readable information to the file
 			// This instance still needs to load the ban file, but no longer needs to call SaveBanList() 
 			// iLastReadInstance = ft; to prevent this instance from reloading the ban file next time a map change occours
 			iLastReadInstance = ft;	
@@ -533,7 +540,7 @@ void LoadBanList()
 					TrimString(sPair[0]); TrimString(sPair[1]); TrimString(sPair[2]); TrimString(sPair[3]);
 					
 					// Regex to detect incorrect ban entries -> these entries are omitted
-					if ( hRegexSteamid.Match( sPair[0] ) && hRegexDigitsZero.Match( sPair[1] ) && ( hRegexDigits.Match( sPair[2] ) || hRegexStrDhm.Match( sPair[2] ) ) )
+					if ( hRegexSteamid.Match( sPair[0] ) && hRegexDigitsZero.Match( sPair[1] ) && sPair[2][0] && ( hRegexDigits.Match( sPair[2] ) || hRegexStrDhm.Match( sPair[2] ) ) )
 					{
 						// Start time
 						if (!sPair[1][0]) // no Unix time specified -> start of the ban for the player is the timestamp of the ban file
@@ -601,6 +608,8 @@ void SaveBanList( bool bDelExpiredBan = false, const char[] sExpiredBanSteamId =
 				WriteFileLine( hFile, sBuffer );
 		}
 		CloseHandle(hFile);
+		hFile = OpenFile(FILE_BAN_LASTWRITE, "w"); // Set new timestamp. Prevents writing th same ban entries again.
+		CloseHandle(hFile);
 
 		return;
 	}
@@ -610,7 +619,7 @@ void SaveBanList( bool bDelExpiredBan = false, const char[] sExpiredBanSteamId =
 	WriteFileLine(hFile, "// Format:");
 	WriteFileLine(hFile, "// [Steam-ID],[Empty]OR[Unix timestamp],[Minutes]OR[d h m]OR[dhm],[Empty]OR[Self note]");
 	WriteFileLine(hFile, "// Explanation:");
-	WriteFileLine(hFile, "// Steam-ID,Start of ban,Duration in minutes OR String with,Self note (e.g. nickname of banned player)");
+	WriteFileLine(hFile, "// Steam-ID,Start of ban,Duration in minutes OR dhm-String,Self note (e.g. nickname of banned player)");
 	WriteFileLine(hFile, "// After each file change, the Votekick plugin writes a Unix timestamp (start of ban) and adds the following");
 	WriteFileLine(hFile, "// to the end of the line: ', == Start YYYY-MM-DD HH:MM:SS<->Stop YYYY-MM-DD HH:MM:SS'");
 	WriteFileLine(hFile, "// Examples:");
