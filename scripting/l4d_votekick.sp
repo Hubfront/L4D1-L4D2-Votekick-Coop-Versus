@@ -540,7 +540,7 @@ void LoadBanList()
 					TrimString(sPair[0]); TrimString(sPair[1]); TrimString(sPair[2]); TrimString(sPair[3]);
 					
 					// Regex to detect incorrect ban entries -> these entries are omitted
-					if ( hRegexSteamid.Match( sPair[0] ) && hRegexDigitsZero.Match( sPair[1] ) && sPair[2][0] && ( hRegexDigits.Match( sPair[2] ) || hRegexStrDhm.Match( sPair[2] ) ) )
+					if ( sPair[2][0] && hRegexSteamid.Match( sPair[0] ) && hRegexDigitsZero.Match( sPair[1] ) && ( hRegexDigits.Match( sPair[2] ) || hRegexStrDhm.Match( sPair[2] ) ) )
 					{
 						// Start time
 						if (!sPair[1][0]) // no Unix time specified -> start of the ban for the player is the timestamp of the ban file
