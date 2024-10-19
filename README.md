@@ -65,9 +65,9 @@ Settings (ConVars):
     - sm_votekick_timeout - def.: 10 - How long (in sec.) does the vote last
     - sm_votekick_announcedelay - def.: 2.0 - Delay (in sec.) between announce and vote menu appearing
     - sm_votekick_kicktime - def.: 3600 - How long player will be kicked (in sec.)
-    - sm_votekick_minplayers - def.: 4 - Minimum players present in game to allow starting vote for kick
-    - sm_votekick_minplayers_versus - def.: 4 - Minimum players present in team to allow starting vote for kick (Versus gamemode)
-    - sm_votekick_accessflag - def.: "k" (StartVote) - Admin flag required to start the vote (leave empty to allow for everybody)
+    - sm_votekick_minplayers - def.: 1 - Minimum players present in game to allow starting vote for kick
+    - sm_votekick_minplayers_versus - def.: 1 - Minimum players present in team to allow starting vote for kick (Versus gamemode)
+    - sm_votekick_accessflag - def.: "" (StartVote) - Admin flag required to start the vote (leave empty to allow for everybody)
     - sm_votekick_vetoflag - def.: "d" (Ban) - Admin flag required to veto/votepass the vote
     - sm_votekick_log - def.: 1 - Use logging? (1 - Yes / 0 - No)
     - sm_votekick_show_kick_reason - def: 0 - Allow to select kick reason? (1 - Yes / 0 - No)
