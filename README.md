@@ -1,6 +1,7 @@
 Description:
 
-    This plugin replaces the black screen kick vote by a translucent menu. It is a fork of the discontinued plugin “[L4D1 & L4D2] Votekick – no black screen (Coop & Versus)” from Dragokas.
+    This plugin replaces the black screen kick vote by a translucent menu. 
+	It is a fork of the discontinued plugin “[L4D1 & L4D2] Votekick – no black screen (Coop & Versus)” from Dragokas.
 
     My motivation of the fork is mainly:
     - fix bugs
@@ -100,7 +101,8 @@ Installation:
     - copy smx file to addons/sourcemod/plugins/
     - copy l4d_votekick.phrases.txt file to addons/sourcemod/translations/
     - copy data/ .txt files to addons/sourcemod/data/
-    - to use the banfile: set sm_votekick_use_banfile = 1 in cfg-file . Afterwards information about adding a ban entry can be found in the automatically generated data/votekick_ban.txt file
+    - In order to use the banfile: set sm_votekick_use_banfile = 1 in cfg-file and restart the L4D-server
+	  * view the data/votekick_ban.txt file you've now created and add Steam IDs to temporarily ban
 
 Credits:
 
