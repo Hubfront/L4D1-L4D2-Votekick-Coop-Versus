@@ -101,8 +101,8 @@ Installation:
     - copy smx file to addons/sourcemod/plugins/
     - copy l4d_votekick.phrases.txt file to addons/sourcemod/translations/
     - copy data/ .txt files to addons/sourcemod/data/
-    - in order to use the banfile: set sm_votekick_use_banfile = 1 in cfg-file and restart the L4D-server
-	  * view the data/votekick_ban.txt file you've now created and add Steam IDs to temporarily ban
+    - in order to use the banfile: set sm_votekick_use_banfile = 1 in cfg-file. On next map start the plugin creates data/votekick_ban.txt. 
+	  * edit data/votekick_ban.txt to add Steam IDs to temporarily ban
 
 Credits:
 
