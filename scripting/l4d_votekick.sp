@@ -249,7 +249,7 @@ char FILE_ANC_BLOCK_2[PLATFORM_MAX_PATH]	= "cfg/sourcemod/anc/newnames.txt";
 ArrayList g_hArrayVoteBlock, g_hArrayVoteReason;
 StringMap hMapSteam, hMapPlayerName, hMapPlayerTeam, hMapBanStart, hMapBanStop, hMapBanSelfnote;
 Regex hRegexSteamid, hRegexDigitsZero, hRegexDigits, hRegexStrDhm;
-char g_sSteam[64], g_sIP[32], g_sCountry[4], g_sName[MAX_NAME_LENGTH], g_sLog[PLATFORM_MAX_PATH];
+char g_sSteam[64], g_sIP[32], g_sCountry[4], g_sName[MAX_NAME_LENGTH], g_sLog[PLATFORM_MAX_PATH], g_sCfg[PLATFORM_MAX_PATH];
 int g_iKickUserId, iLastTime[MAXPLAYERS+1], g_iKickTarget[MAXPLAYERS+1], g_iReason, g_iVoteIssuerTeam;
 bool g_bVeto, g_bVotepass, g_bVoteInProgress, g_bVoteDisplayed, g_bTooOften[MAXPLAYERS+1], g_bIsVersus;
 
@@ -344,20 +344,43 @@ public void OnPluginStart()
 	
 	GetCvars();
 	
-	if ( g_hCvarUseBanfileLog.IntValue == 1 )
+	BuildPath(Path_SM, g_sCfg, sizeof(g_sCfg), "../../cfg/sourcemod/sm_votekick.cfg");
+	if ( FileExists(g_sCfg) )
 	{
-		hMapBanStart = new StringMap();
-		hMapBanStop = new StringMap();
-		hMapBanSelfnote = new StringMap();
+		ArrayList hList;
+		char sBuffer[128], sPair[2][2];
+		
+		hList = new ArrayList(ByteCountToCells(128));
+		
+		ReadFileToArrayList(g_sCfg, hList);
+		
+		for( int i = 0; i < hList.Length; i++ )
+		{
+			hList.GetString(i, sBuffer, sizeof(sBuffer));
+			if( StrContains(sBuffer, "//") == -1 )
+			{
+				if( StrContains(sBuffer, "sm_votekick_use_banfile ") == 0 )
+				{
+					ExplodeString( sBuffer, "\"", sPair, sizeof(sPair), sizeof(sPair[ ]) );
+				}
+			}
+		}
 
-		// Regex to detect incorrect ban file entries -> these entries are omitted
-		hRegexSteamid = CompileRegex("^STEAM_[0-5]:[01]:\\d+$");
-		hRegexDigitsZero = CompileRegex("^\\d{0,}$");
-		hRegexDigits = CompileRegex("^\\d+$");
-		hRegexStrDhm = CompileRegex("^(?:(\\d+)[ ]*[Dd])*[ ]*(?:(\\d+)[ ]*[Hh])*[ ]*(?:(\\d+)[ ]*[Mm])*$");
+		if ( StrContains(sPair[1][0], "1" ) == 0 )
+		{
+			hMapBanStart = new StringMap();
+			hMapBanStop = new StringMap();
+			hMapBanSelfnote = new StringMap();
 
-		BuildPath(Path_SM, FILE_BAN, sizeof(FILE_BAN), FILE_BAN);
-		BuildPath(Path_SM, FILE_BAN_LASTWRITE, sizeof(FILE_BAN_LASTWRITE), FILE_BAN_LASTWRITE);
+			// Regex to detect incorrect ban file entries -> these entries are omitted
+			hRegexSteamid = CompileRegex("^STEAM_[0-5]:[01]:\\d+$");
+			hRegexDigitsZero = CompileRegex("^\\d{0,}$");
+			hRegexDigits = CompileRegex("^\\d+$");
+			hRegexStrDhm = CompileRegex("^(?:(\\d+)[ ]*[Dd])*[ ]*(?:(\\d+)[ ]*[Hh])*[ ]*(?:(\\d+)[ ]*[Mm])*$");
+
+			BuildPath(Path_SM, FILE_BAN, sizeof(FILE_BAN), FILE_BAN);
+			BuildPath(Path_SM, FILE_BAN_LASTWRITE, sizeof(FILE_BAN_LASTWRITE), FILE_BAN_LASTWRITE);
+		}
 	}
 }
 
@@ -476,33 +499,19 @@ void LoadReasonList()
 
 void LoadBanList()
 {
-	static bool bBanFileExist = false, bBanFileLastWriteExist = false, bSaveBanFile = false;
+	static bool bSaveBanFile = false;
 	static int iLastReadInstance;
 	int ft;
 	
 	bSaveBanFile = false;
 	
-	if (!bBanFileExist)
-	{
-		if( !FileExists(FILE_BAN) )	// write ban file if not exist
-		{
-			SaveBanList();
-			bBanFileExist = true;
-		}
-		else
-			bBanFileExist = true;
-	}
+	if( !FileExists(FILE_BAN) )	// write ban file if not exist
+		SaveBanList();
 	
-	if (!bBanFileLastWriteExist)	// write ban file timestamp file if not exist
+	if( !FileExists(FILE_BAN_LASTWRITE) )	// write ban file timestamp file if not exist
 	{
-		if( !FileExists(FILE_BAN_LASTWRITE) )
-		{
-			Handle hFile = OpenFile(FILE_BAN_LASTWRITE, "w");
-			CloseHandle(hFile);
-			bBanFileLastWriteExist = true;
-		}
-		else
-			bBanFileLastWriteExist = true;
+		Handle hFile = OpenFile(FILE_BAN_LASTWRITE, "w");
+		CloseHandle(hFile);
 	}
 
 	// if there is a timestamp difference of ban file to iLastReadInstance (= probably due to changed ban entries)
