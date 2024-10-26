@@ -650,7 +650,7 @@ public void OnConfigsExecuted()
 
 	// When sm_votekick_use_banfile is set to "1" for the first time, regex is initiated once in the life of this plugin instance
 	//
-	if ( g_bCvarUseBanfile && !g_bRegexExists )
+	if ( !g_bRegexExists && g_bCvarUseBanfile )
 	{
 		hMapBanStart = new StringMap();
 		hMapBanStop = new StringMap();
