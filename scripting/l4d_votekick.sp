@@ -126,6 +126,9 @@ public Plugin myinfo =
 	4.2 (19-10-2024)
 	 - Code optimizations
 	 
+	4.3 (xx-10-2024)
+	 - Optimization: L4D server restart is no longer required after cvar sm_votekick_use_banfile is set to “1” (Banfile)
+	 
 	Please note: for completeness, the following changelog has been copied from Dragokas' plugin "[L4D] Votekick (no black screen)", version 3.5.
 
 	"Plugin is initially based on the work of D1maxa.
