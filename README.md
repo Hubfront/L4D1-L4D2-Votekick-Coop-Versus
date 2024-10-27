@@ -27,9 +27,10 @@ Features:
         * See the file: data/votekick_vote_block.txt
 
     - auto-add to deny list the users from the "newnames.txt" file in Auto-Name-Changer by Exle plugin.
-    - simple temporary bans by a file-based solution:
+    - ability to exclude a list of users you may not want to connect for a given time period. Excluded users receive the message "STEAM UserID is banned."
+	 
+        * See the file: data/votekick_ban.txt (if not present, create it by setting cvar sm_votekick_use_banfile set to "1" in cfg-file)
 
-        * See the file: data/votekick_ban.txt (needs cvar sm_votekick_use_banfile set to "1" in cfg-file)
 
 Logfile location:
 
@@ -37,7 +38,7 @@ Logfile location:
 
 Data file:
 
-    - data/votekick_vote_block.txt - deny list of user you may want to disable ability to start the voting
+    - data/votekick_vote_block.txt - list of users you may want to exclude from the right to vote
 
         * (SteamId and nicknames with simple mask * are allowed).
 
@@ -47,13 +48,19 @@ Data file:
 
         - Add new line in data/votekick_reason.txt
         - Edit translation file to add new entry similar to "Rusher" in file: translations/l4d_votekick.phrases.txt
+    
+    - data/votekick_ban.txt - list of users you may not want to connect for a given time period. Optional. Only read/created (if not present) if cvar sm_votekick_use_banfile = 1 (default: 0).
+
+        * Format: SteamId, Start (Unixtime), Minutes, Self note
+
+    - data/votekick_ban_lastwrite.txt - timestamp file. Optional. Only read/created (if not present) if cvar sm_votekick_use_banfile = 1 (default: 0).
 
 Permissions:
 
     - by default, vote can be started by player with "k" (StartVote) flag (adjustable).
     - by default, vote can be vetoed or force passed by player with "d" (Ban) flag (adjustable).
-    - ability to set minimum time to allow repeat the vote.
-    - ability to set minimum players count to allow starting the vote.
+    - ability to set a minimum time to allow voting to be repeated.
+    - ability to set a minimum number of players to hold a vote.
     - admins cannot target root admin.
     - non-admins cannot target admins.
     - users with lower immunity level cannot target users with higher level.
@@ -101,9 +108,12 @@ Installation:
     - copy smx file to addons/sourcemod/plugins/
     - copy l4d_votekick.phrases.txt file to addons/sourcemod/translations/
     - copy data/ .txt files to addons/sourcemod/data/
-    - in order to use the banfile: set sm_votekick_use_banfile = 1 in cfg-file. On next map start the plugin creates data/votekick_ban.txt. 
-	  * edit data/votekick_ban.txt to add Steam IDs to temporarily ban
-
+    - banfile: to enable, set sm_votekick_use_banfile = 1 in the cfg file. 	  
+   	  * file data/votekick_ban.txt will be created with next map start/change, if it not already exists.
+	    There You can add a player's STEAM Id to exclude them from connection
+   	  * file data/votekick_ban_lastwrite.txt will be created with next map start/change, if it not already exists.    
+    - banfile: to disable, set sm_votekick_use_banfile = 0 in the cfg file (effective with the next map change).
+    
 Credits:
 
     - D1maxa – for the initial plugin
