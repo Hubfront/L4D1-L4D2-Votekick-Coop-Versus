@@ -76,7 +76,9 @@ public Plugin myinfo =
 	 - copy translations/l4d_votekick.phrases.txt file to addons/sourcemod/translations/
 	 - copy data/ .txt files to addons/sourcemod/data/
 	 - to use the banfile: set sm_votekick_use_banfile = 1 in cfg-file . 
-	   Add a player to the then automatically generated (with next map start) data/votekick_ban.txt file
+	   * file data/votekick_ban.txt will be created with next map start/change, if it not already exists. 
+	   You can add a player's STEAM Id to exclude them from connection
+	 - to deactivate the banfile: set sm_votekick_use_banfile = 0 .
 	
 	Credits:
 	 - D1maxa - for the initial plugin
@@ -127,7 +129,7 @@ public Plugin myinfo =
 	 - Code optimizations
 	 
 	4.3 (xx-10-2024)
-	 - Optimization: L4D server restart is no longer required after cvar sm_votekick_use_banfile is set to “1” (Banfile)
+	 - Installation improvement: after cvar was changed, L4D server restart is no longer required for banfile activation
 	 
 	Please note: for completeness, the following changelog has been copied from Dragokas' plugin "[L4D] Votekick (no black screen)", version 3.5.
 
