@@ -37,7 +37,7 @@ public Plugin myinfo =
 	 - all actions are logged (who kick, whom kick, who tried to kick, ip/country/nick/SteamId, reason ...)
 	 - ability to black list specific users (by SteamId or nickname) to prevent them from starting the vote:
 	 * See the file: data/votekick_vote_block.txt
-	 - simple temporary bans by a file-based solution:
+	 - simple temporary bans by a file-based solution: list of users you may not want to connect for a given time period. Excluded users receive the message "STEAM_ID XYZ is banned."
 	 * See the file: data/votekick_ban.txt (needs cvar sm_votekick_use_banfile set to "1" in cfg-file)
 	
 	Logfile location:
@@ -47,6 +47,9 @@ public Plugin myinfo =
 	 - data/votekick_vote_block.txt - list of user you may want to disable ability to start the voting
 	 * (SteamId and nicknames with simple mask * are allowed).
 	 - data/votekick_reason.txt - list of kick reasons (optionally, must be supplied with appropriate translation in file: l4d_votekick.phrases.txt).
+	 - file data/votekick_ban.txt - list of users you may want to exclode from connection. Optional, will only be readed / be created, if cvar sm_votekick_use_banfile = 1 (default: 0)
+	 * Format of a line: SteamId, Start (Unixtime), Minutes, Self note
+	 - file data/votekick_ban_lastwrite.txt - timestamp file. Optional, will only be readed / be created, if cvar sm_votekick_use_banfile = 1 (default: 0)
 
 	Permissions:
 	 - by default, voting can be started by anyone (customizable): 
@@ -75,11 +78,11 @@ public Plugin myinfo =
 	 - copy smx file to addons/sourcemod/plugins/
 	 - copy translations/l4d_votekick.phrases.txt file to addons/sourcemod/translations/
 	 - copy data/ .txt files to addons/sourcemod/data/
-	 - to use the banfile: set sm_votekick_use_banfile = 1 in cfg-file . 
+	 - activate the banfile: set sm_votekick_use_banfile = 1 in cfg-file . 
 	   * file data/votekick_ban.txt will be created with next map start/change, if it not already exists. 
 	   You can add a player's STEAM Id to exclude them from connection
 	 - to deactivate the banfile: set sm_votekick_use_banfile = 0 .
-	
+
 	Credits:
 	 - D1maxa - for the initial plugin
 	 - Dragokas – much thanks for his outstanding and inspiring work on which this plugin is based
