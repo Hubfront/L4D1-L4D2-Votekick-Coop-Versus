@@ -109,11 +109,11 @@ Installation:
     - copy l4d_votekick.phrases.txt file to addons/sourcemod/translations/
     - copy data/ .txt files to addons/sourcemod/data/
     - banfile:
-    to enable, set sm_votekick_use_banfile = 1 in the cfg file. 	  
-    * file data/votekick_ban.txt will be created with next map start/change, if it not already exists.
-    There You can add a player's STEAM Id to exclude them from connection
-    * file data/votekick_ban_lastwrite.txt will be created with next map start/change, if it not already exists.    
-    to disable, set sm_votekick_use_banfile = 0 in the cfg file (effective with the next map change).
+      to enable, set sm_votekick_use_banfile = 1 in the cfg file. 	  
+      * file data/votekick_ban.txt will be created with next map start/change, if it not already exists.
+      There You can add a player's STEAM Id to exclude them from connection
+      * file data/votekick_ban_lastwrite.txt will be created with next map start/change, if it not already exists.    
+      to disable, set sm_votekick_use_banfile = 0 in the cfg file (effective with the next map change).
     
 Credits:
 
