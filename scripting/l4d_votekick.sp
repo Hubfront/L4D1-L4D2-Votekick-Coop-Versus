@@ -47,9 +47,9 @@ public Plugin myinfo =
 	 - data/votekick_vote_block.txt - list of user you may want to disable ability to start the voting
 	 * (SteamId and nicknames with simple mask * are allowed).
 	 - data/votekick_reason.txt - list of kick reasons (optionally, must be supplied with appropriate translation in file: l4d_votekick.phrases.txt).
-	 - file data/votekick_ban.txt - list of users you may want to exclode from connection. Optional, will only be readed / be created, if cvar sm_votekick_use_banfile = 1 (default: 0)
-	 * Format of a line: SteamId, Start (Unixtime), Minutes, Self note
-	 - file data/votekick_ban_lastwrite.txt - timestamp file. Optional, will only be readed / be created, if cvar sm_votekick_use_banfile = 1 (default: 0)
+	 - data/votekick_ban.txt - list of users you may want to exclude from connection. Optional. Will only be readed / be created (if not exists), if cvar sm_votekick_use_banfile = 1 (default: 0).
+	 * Format: SteamId, Start (Unixtime), Minutes, Self note
+	 - file data/votekick_ban_lastwrite.txt - timestamp file. Optional. Will only be readed / be created (if not exists), if cvar sm_votekick_use_banfile = 1 (default: 0)
 
 	Permissions:
 	 - by default, voting can be started by anyone (customizable): 
