@@ -37,26 +37,26 @@ public Plugin myinfo =
 	 - all actions are logged (who kick, whom kick, who tried to kick, ip/country/nick/SteamId, reason ...)
 	 - ability to black list specific users (by SteamId or nickname) to prevent them from starting the vote:
 	 * See the file: data/votekick_vote_block.txt
-	 - simple temporary bans by a file-based solution: list of users you may not want to connect for a given time period. Excluded users receive the message "STEAM_ID XYZ is banned."
-	 * See the file: data/votekick_ban.txt (needs cvar sm_votekick_use_banfile set to "1" in cfg-file)
+	 - ability to exclude a list of users you may not want to connect for a given time period. Excluded users receive the message "STEAM UserID is banned."
+	 * See the file: data/votekick_ban.txt (if not present, create it by setting cvar sm_votekick_use_banfile set to "1" in cfg-file)
 	
 	Logfile location:
 	 - logs/vote_kick.log
 	 
 	Data file:
-	 - data/votekick_vote_block.txt - list of user you may want to disable ability to start the voting
+	 - data/votekick_vote_block.txt - list of users you may want to exclude from the right to start voting
 	 * (SteamId and nicknames with simple mask * are allowed).
 	 - data/votekick_reason.txt - list of kick reasons (optionally, must be supplied with appropriate translation in file: l4d_votekick.phrases.txt).
-	 - data/votekick_ban.txt - list of users you may want to exclude from connection. Optional. Will only be readed / be created (if not exists), if cvar sm_votekick_use_banfile = 1 (default: 0).
+	 - data/votekick_ban.txt - list of users you may want to exclude from connecting. Optional. Only read/created (if not present) if cvar sm_votekick_use_banfile = 1 (default: 0).
 	 * Format: SteamId, Start (Unixtime), Minutes, Self note
-	 - file data/votekick_ban_lastwrite.txt - timestamp file. Optional. Will only be readed / be created (if not exists), if cvar sm_votekick_use_banfile = 1 (default: 0)
+	 - data/votekick_ban_lastwrite.txt - timestamp file. Optional. Only read/created (if not present) if cvar sm_votekick_use_banfile = 1 (default: 0).
 
 	Permissions:
 	 - by default, voting can be started by anyone (customizable): 
 	   you could also restrict voting access, for example to players with the "k" (StartVote) flag (set cvar sm_votekick_accessflag to "k").
 	 - by default, vote can be vetoed or force passed by player with "d" (Ban) flag (adjustable).
-	 - ability to set minimum time to allow repeat the vote.
-	 - ability to set minimum players count to allow starting the vote.
+	 - ability to set a minimum time to allow voting to be repeated.
+	 - ability to set a minimum number of players to hold a vote.
 	 - admins cannot target root admin.
 	 - non-admins cannot target admins.
 	 - users with lower immunity level cannot target users with higher level.
@@ -78,10 +78,10 @@ public Plugin myinfo =
 	 - copy smx file to addons/sourcemod/plugins/
 	 - copy translations/l4d_votekick.phrases.txt file to addons/sourcemod/translations/
 	 - copy data/ .txt files to addons/sourcemod/data/
-	 - activate the banfile: set sm_votekick_use_banfile = 1 in cfg-file . 
+	 - banfile: to enable, set sm_votekick_use_banfile = 1 in the cfg file. 
 	   * file data/votekick_ban.txt will be created with next map start/change, if it not already exists. 
-	   You can add a player's STEAM Id to exclude them from connection
-	 - to deactivate the banfile: set sm_votekick_use_banfile = 0 .
+	   There You can add a player's STEAM Id to exclude them from connection
+	 - banfile: to disable, set sm_votekick_use_banfile = 0 in the cfg file (effective with the next map change).
 
 	Credits:
 	 - D1maxa - for the initial plugin
@@ -132,7 +132,7 @@ public Plugin myinfo =
 	 - Code optimizations
 	 
 	4.3 (xx-10-2024)
-	 - Installation improvement: after cvar was changed, L4D server restart is no longer required for banfile activation
+	 - Fixed a bug where in some cases a game server restart was required to create data/votekick_ban.txt
 	 
 	Please note: for completeness, the following changelog has been copied from Dragokas' plugin "[L4D] Votekick (no black screen)", version 3.5.
 
