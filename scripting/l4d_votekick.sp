@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "4.2"
+#define PLUGIN_VERSION "4.3"
 
 #pragma newdecls required
 #pragma semicolon 1
@@ -132,8 +132,9 @@ public Plugin myinfo =
 	4.2 (19-10-2024)
 	 - Code optimizations
 	 
-	4.3 (xx-10-2024)
+	4.3 (29-Oct-2024)
 	 - Fixed a bug where in some cases a game server restart was required to create data/votekick_ban.txt
+	 - Updated description
 	 
 	Please note: for completeness, the following changelog has been copied from Dragokas' plugin "[L4D] Votekick (no black screen)", version 3.5.
 
