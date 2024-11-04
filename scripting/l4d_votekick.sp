@@ -548,7 +548,7 @@ void LoadBanList()
 							bSaveBanFile = true;
 						}
 						
-						if ( iTime + iMinutes * 60 > GetTime() ) // active ban
+						if ( iTime + iMinutes * 60 > GetTime() ) // Ban period has not expired or is in the future
 						{
 							FormatEx( sTime, sizeof(sTime), "%i", iTime );
 							hMapBanStart.SetString( sPair[0], sTime, true );
@@ -600,23 +600,27 @@ void SaveBanList( bool bDelExpiredBan = false, const char[] sExpiredBanSteamId =
 	}
 
 	Handle hFile = OpenFile(FILE_BAN, "wt");
-	WriteFileLine(hFile, "// l4d_votekick: simple temporary bans");
-	WriteFileLine(hFile, "// Format:");
-	WriteFileLine(hFile, "// [Steam-ID],[Empty]OR[Unix timestamp],[Minutes]OR[d h m]OR[dhm],[Empty]OR[Self note]");
-	WriteFileLine(hFile, "// Explanation:");
-	WriteFileLine(hFile, "// Steam-ID,Start of ban,Duration in minutes OR dhm-String,Self note (e.g. nickname of banned player)");
-	WriteFileLine(hFile, "// After each file change, the Votekick plugin writes a Unix timestamp (start of ban) and adds the following");
-	WriteFileLine(hFile, "// to the end of the line: ', == Start YYYY-MM-DD HH:MM:SS<->Stop YYYY-MM-DD HH:MM:SS'");
-	WriteFileLine(hFile, "// Examples:");
-	WriteFileLine(hFile, "// STEAM_1:0:12345678,,360,				= Start of ban: now, duration: 360 minutes (6h), self note: none");
-	WriteFileLine(hFile, "// STEAM_1:0:12345678,,360m,				= same result as above");
-	WriteFileLine(hFile, "// STEAM_1:0:12345678,,1440,Dagobert			= Start of ban: now, duration 1440m (1d), self note: Dagobert");
-	WriteFileLine(hFile, "// STEAM_1:0:12345678,,1d,Dagobert			= same result as above");
-	WriteFileLine(hFile, "// STEAM_1:0:12345678,,24h,Dagobert			= same result as above");
-	WriteFileLine(hFile, "// STEAM_1:1:12345678,1713214999,4320,Donald 		= Start 2024-04-15 23:03:19, duration: 4320m (3d), self note: Donald");
-	WriteFileLine(hFile, "// STEAM_1:1:12345678,1713214999,2d 24h,Donald 		= same result as above");
-	WriteFileLine(hFile, "// STEAM_1:1:12345678,1713214999,1d 24h 1440m,Donald	= same result as above");
-	WriteFileLine(hFile, "//-------------------//");
+	WriteFileLine(hFile, "//	l4d_votekick: simple temporary bans");
+	WriteFileLine(hFile, "//	Format:");
+	WriteFileLine(hFile, "//	[Steam-ID],[Empty]OR[Unix timestamp],[Minutes]OR[d h m]OR[dhm],[Empty]OR[Self note]");
+	WriteFileLine(hFile, "//	Explanation:");
+	WriteFileLine(hFile, "//	Steam-ID,Start of ban,Duration in minutes OR dhm-String,Self note (e.g. nickname of banned player)");
+	WriteFileLine(hFile, "//	After each file change, the Votekick plugin writes a Unix timestamp (start of ban) and adds the following");
+	WriteFileLine(hFile, "//	to the end of the line: ', == Start YYYY-MM-DD HH:MM:SS<->Stop YYYY-MM-DD HH:MM:SS'");
+	WriteFileLine(hFile, "//");
+	WriteFileLine(hFile, "////////////////////////////////");
+	WriteFileLine(hFile, "//	Examples:");
+	WriteFileLine(hFile, "//");
+	WriteFileLine(hFile, "//	STEAM_1:0:12345678,,360,				= Start of ban: now, duration: 360 minutes (6h), self note: none");
+	WriteFileLine(hFile, "//	STEAM_1:0:12345678,,360m,				= same result as above");
+	WriteFileLine(hFile, "//	STEAM_1:0:12345678,,1440,Dagobert			= Start of ban: now, duration 1440m (1d), self note: Dagobert");
+	WriteFileLine(hFile, "//	STEAM_1:0:12345678,,1d,Dagobert				= same result as above");
+	WriteFileLine(hFile, "//	STEAM_1:0:12345678,,24h,Dagobert			= same result as above");
+	WriteFileLine(hFile, "//	STEAM_1:1:12345678,1713214999,4320,Donald 		= Start 2024-04-15 23:03:19, duration: 4320m (3d), self note: Donald");
+	WriteFileLine(hFile, "//	STEAM_1:1:12345678,1713214999,2d 24h,Donald 		= same result as above");
+	WriteFileLine(hFile, "//	STEAM_1:1:12345678,1713214999,1d 24h 1440m,Donald	= same result as above");
+	WriteFileLine(hFile, "//");
+	WriteFileLine(hFile, "////////////////////////////////");
 
 	StringMapSnapshot hSnap = hMapBanStart.Snapshot();
 	if( hSnap )
@@ -1161,10 +1165,10 @@ public void Handle_VoteResults(	Menu menu,	// The menu being voted on.
 	{
 		// winner vote is array index 0
 
-		if( item_info[0][VOTEINFO_ITEM_INDEX] == 0 )	// item_info[0][0] ="Yes" wins
+		if( item_info[0][VOTEINFO_ITEM_INDEX] == 0 )		// item_info[0][0] ="Yes" wins
 			yesVotes = item_info[0][VOTEINFO_ITEM_VOTES];
-		else						// item_info[0][1] ="No" wins
-			noVotes = item_info[0][VOTEINFO_ITEM_VOTES];
+		else
+			noVotes = item_info[0][VOTEINFO_ITEM_VOTES];	// item_info[0][1] ="No" wins
 	} 
 	else if( num_items > 1 )
 	{
@@ -1187,6 +1191,7 @@ public void Handle_VoteResults(	Menu menu,	// The menu being voted on.
 
 	// Show vote result details, if "sm_votekick_show_vote_details" is set to "1" in cfg
 	// don't show voting results in case of a votepass or veto
+	//
 	if( g_bCvarShowVoteDetails && (!g_bVotepass || !g_bVeto) )
 		CPrintToChatTeam( g_iVoteIssuerTeam, "%t", "detailed_vote_results", yesVotes, noVotes, (num_clients-num_votes) ); 
 
@@ -1646,7 +1651,8 @@ void NormalizeName(char[] name, int len)
 	strcopy(name, len, sNew);
 }
 
-// A team's logical team number does not change during the game and is derived from the current client team number (0=spectator,1=survivor,2=zombie), which may change with the next map (here iTeam). 
+// A team's logical team number does not change during the game and is derived from the current 
+// client team number (0=spectator,1=survivor,2=zombie), which may change with the next map (here iTeam). 
 // Requires to include sdktools_gamerules (included in SM). https://forums.alliedmods.net/showthread.php?t=282369
 //
 int GetLogicalTeam(int iTeam)
