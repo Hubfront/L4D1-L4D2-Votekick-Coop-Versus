@@ -468,187 +468,6 @@ void LoadReasonList()
 	}
 }
 
-void LoadBanList()
-{
-	static bool bSaveBanFile = false;
-	static int iLastReadInstance;
-	int ft;
-	
-	bSaveBanFile = false;
-	
-	if( !FileExists(FILE_BAN) )	// write ban file if not exist
-	{	
-		// Delete all entries from memory before
-		hMapBanStart.Clear();
-		hMapBanStop.Clear();
-		hMapBanSelfnote.Clear();
-		SaveBanList();
-	}
-	if( !FileExists(FILE_BAN_LASTWRITE) )	// write ban file timestamp file if not exist
-	{
-		Handle hFile = OpenFile(FILE_BAN_LASTWRITE, "w");
-		CloseHandle(hFile);
-	}
-
-	// if there is a timestamp difference of ban file to iLastReadInstance (= probably due to changed ban entries)
-	// -> reload ban file into memory. Rewrite ban file (e.g. adding human-readable Information) then, if its timestamp differs from FILE_BAN_LASTWRITE
-	if( iLastReadInstance 		!= (ft = GetFileTime(FILE_BAN, FileTime_LastChange)) )
-	{
-		ArrayList hArrayBan;
-		static char sTime[32], sBuffer[128], sPair[ 4 ][ 22 ], buffer[16];
-		static int iTime, iDays, iHours, iMinutes;
-
-		if (GetFileTime(FILE_BAN_LASTWRITE, FileTime_LastChange) != ft)
-			bSaveBanFile = true;	// ban file has been changed, add human-readable information using SaveBanFile()
-		else
-			// Another server instance of this plugin had loaded the ban file and had called SaveBanList() in order to add human-readable information to the file
-			// This instance still needs to load the ban file, but no longer needs to call SaveBanList() 
-			// iLastReadInstance = ft; to prevent this instance from reloading the ban file next time a map change occours
-			iLastReadInstance = ft;	
-
-		// Delete all entries from memory before reloading the ban file
-		hMapBanStart.Clear();
-		hMapBanStop.Clear();
-		hMapBanSelfnote.Clear();
-		
-		hArrayBan = new ArrayList(ByteCountToCells(64));
-		ReadFileToArrayList(FILE_BAN, 	hArrayBan);
-		
-		for( int i = 0; i < hArrayBan.Length; i++ )
-		{
-			hArrayBan.GetString(i, sBuffer, sizeof(sBuffer));
-			if( StrContains(sBuffer, "//") == -1 )
-			{
-				if ( ExplodeString( sBuffer, ",", sPair, sizeof(sPair), sizeof(sPair[ ]) ) > 3 )
-				{
-					// remove leading and trailing whitespaces from strings
-					TrimString(sPair[0]); TrimString(sPair[1]); TrimString(sPair[2]); TrimString(sPair[3]);
-					
-					// Regex to detect incorrect ban entries -> these entries are omitted
-					if ( sPair[2][0] && hRegexSteamid.Match( sPair[0] ) && hRegexDigitsZero.Match( sPair[1] ) && ( hRegexDigits.Match( sPair[2] ) || hRegexStrDhm.Match( sPair[2] ) ) )
-					{
-						// Start time
-						if (!sPair[1][0]) // no Unix time specified -> start of the ban for the player is the timestamp of the ban file
-						{
-							iTime = ft;
-							bSaveBanFile = true;
-						}
-						else
-							iTime = StringToInt( sPair[1] );
-					
-						// Ban period
-						if ( hRegexDigits.Match( sPair[2] ) ) 
-							iMinutes = StringToInt( sPair[2] );
-						else
-						{
-							iDays = ( hRegexStrDhm.GetSubString( 1, buffer, sizeof(buffer), 0 ) ) ? StringToInt ( buffer ) : 0 ;
-							iHours = ( hRegexStrDhm.GetSubString( 2, buffer, sizeof(buffer), 0 ) ) ? StringToInt ( buffer ) : 0 ;
-							iMinutes = ( hRegexStrDhm.GetSubString( 3, buffer, sizeof(buffer), 0 ) ) ? StringToInt ( buffer ) : 0 ;
-							iMinutes = iDays * 1440 + iHours * 60 + iMinutes ;
-							bSaveBanFile = true;
-						}
-						
-						if ( iTime + iMinutes * 60 > GetTime() ) // Ban period has not expired or is in the future
-						{
-							FormatEx( sTime, sizeof(sTime), "%i", iTime );
-							hMapBanStart.SetString( sPair[0], sTime, true );
-							FormatEx( sTime, sizeof(sTime), "%i", iTime + iMinutes * 60 );
-							hMapBanStop.SetString( sPair[0], sTime, true );
-							hMapBanSelfnote.SetString( sPair[0], sPair[3], true );
-						}
-						else
-							bSaveBanFile = true; // delete expired ban from file
-					}
-					else
-						bSaveBanFile = true; // delete wrong format ban from file
-				}
-			}
-		}
-		if ( bSaveBanFile )
-		{
-			SaveBanList(); // Rewrites the ban file from memory: Adds a Unix timestamp for start if not specified. Adds information about the start and end of the ban in a human-readable format. Delete expired bans.
-			iLastReadInstance = GetFileTime(FILE_BAN, FileTime_LastChange);  // Updates iLastReadInstance to prevent this plugin instance from reading the same ban entries into memory a second time
-		}
-	}	
-}
-
-void SaveBanList( bool bDelExpiredBan = false, const char[] sExpiredBanSteamId = "" )
-{
-
-	if ( bDelExpiredBan ) // delete expired ban from file, called by OnClientAuthorized
-	{
-		static char sBuffer[128];
-		ArrayList hArrayBan;
-		
-		hArrayBan = new ArrayList(ByteCountToCells(128));
-		
-		ReadFileToArrayList(FILE_BAN, hArrayBan);
-		
-		Handle hFile = OpenFile(FILE_BAN, "wt");
-		
-		for( int i = 0; i < hArrayBan.Length; i++ )
-		{
-			hArrayBan.GetString(i, sBuffer, sizeof(sBuffer));
-			if( StrContains(sBuffer, sExpiredBanSteamId) == -1 )
-				WriteFileLine( hFile, sBuffer );
-		}
-		CloseHandle(hFile);
-		hFile = OpenFile(FILE_BAN_LASTWRITE, "w"); // Set new timestamp. Prevents writing th same ban entries again.
-		CloseHandle(hFile);
-
-		return;
-	}
-
-	Handle hFile = OpenFile(FILE_BAN, "wt");
-	WriteFileLine(hFile, "//	l4d_votekick: simple temporary bans");
-	WriteFileLine(hFile, "//	Format:");
-	WriteFileLine(hFile, "//	[Steam-ID],[Empty]OR[Unix timestamp],[Minutes]OR[d h m]OR[dhm],[Empty]OR[Self note]");
-	WriteFileLine(hFile, "//	Explanation:");
-	WriteFileLine(hFile, "//	Steam-ID,Start of ban,Duration in minutes OR dhm-String,Self note (e.g. nickname of banned player)");
-	WriteFileLine(hFile, "//	After each file change, the Votekick plugin writes a Unix timestamp (start of ban) and adds the following");
-	WriteFileLine(hFile, "//	to the end of the line: ', == Start YYYY-MM-DD HH:MM:SS<->Stop YYYY-MM-DD HH:MM:SS'");
-	WriteFileLine(hFile, "//");
-	WriteFileLine(hFile, "////////////////////////////////");
-	WriteFileLine(hFile, "//	Examples:");
-	WriteFileLine(hFile, "//");
-	WriteFileLine(hFile, "//	STEAM_1:0:12345678,,360,				= Start of ban: now, duration: 360 minutes (6h), self note: none");
-	WriteFileLine(hFile, "//	STEAM_1:0:12345678,,360m,				= same result as above");
-	WriteFileLine(hFile, "//	STEAM_1:0:12345678,,1440,Dagobert			= Start of ban: now, duration 1440m (1d), self note: Dagobert");
-	WriteFileLine(hFile, "//	STEAM_1:0:12345678,,1d,Dagobert				= same result as above");
-	WriteFileLine(hFile, "//	STEAM_1:0:12345678,,24h,Dagobert			= same result as above");
-	WriteFileLine(hFile, "//	STEAM_1:1:12345678,1713214999,4320,Donald 		= Start 2024-04-15 23:03:19, duration: 4320m (3d), self note: Donald");
-	WriteFileLine(hFile, "//	STEAM_1:1:12345678,1713214999,2d 24h,Donald 		= same result as above");
-	WriteFileLine(hFile, "//	STEAM_1:1:12345678,1713214999,1d 24h 1440m,Donald	= same result as above");
-	WriteFileLine(hFile, "//");
-	WriteFileLine(hFile, "////////////////////////////////");
-
-	StringMapSnapshot hSnap = hMapBanStart.Snapshot();
-	if( hSnap )
-	{
-		static char sTime[32], sTime2[32], sSteam[64], sSelfnote[32], sStartDate[20], sStopDate[20], sMinutes[10], sBuffer[128];
-		static int iTime, iTime2, iMinutes;
-		for( int i = 0; i < hSnap.Length; i++ )
-		{
-			hSnap.GetKey( i, sSteam, sizeof(sSteam) );
-			hMapBanStart.GetString( sSteam, sTime, sizeof(sTime) );
-			hMapBanStop.GetString( sSteam, sTime2, sizeof(sTime2) );
-			hMapBanSelfnote.GetString( sSteam, sSelfnote, sizeof(sSelfnote) );
-			iTime = StringToInt( sTime );
-			iTime2 = StringToInt( sTime2 );
-			FormatTime( sStartDate , sizeof(sStartDate) , "%Y-%m-%d %H:%M:%S", iTime );
-			FormatTime( sStopDate , sizeof(sStopDate) , "%Y-%m-%d %H:%M:%S", iTime2 );
-			iMinutes = ( iTime2 - iTime ) / 60;
-			FormatEx( sMinutes , sizeof( sMinutes ) , "%i", iMinutes );
-			FormatEx( sBuffer, sizeof(sBuffer), "%s,%s,%s,%s, == Start %s<->Stop %s", sSteam, sTime, sMinutes, sSelfnote, sStartDate, sStopDate );
-			WriteFileLine( hFile, sBuffer, false );
-		}
-		delete hSnap;
-	}
-	CloseHandle(hFile);
-
-	hFile = OpenFile(FILE_BAN_LASTWRITE, "w"); // Set new timestamp. Prevents writing th same ban entries again.
-	CloseHandle(hFile);
-}
 
 public void OnMapStart()
 {
@@ -1686,4 +1505,186 @@ stock char[] SecsToDays(int iSeconds)
 	Format(sDays,sizeof(sDays),"%i days %i hours %i minutes", iDays, iHours, iMinutes); 
 	
 	return sDays;
+}
+
+void LoadBanList()
+{
+	static bool bSaveBanFile = false;
+	static int iLastReadInstance;
+	int ft;
+	
+	bSaveBanFile = false;
+	
+	if( !FileExists(FILE_BAN) )	// write ban file if not exist
+	{	
+		// Delete all entries from memory before
+		hMapBanStart.Clear();
+		hMapBanStop.Clear();
+		hMapBanSelfnote.Clear();
+		SaveBanList();
+	}
+	if( !FileExists(FILE_BAN_LASTWRITE) )	// write ban file timestamp file if not exist
+	{
+		Handle hFile = OpenFile(FILE_BAN_LASTWRITE, "w");
+		CloseHandle(hFile);
+	}
+
+	// if there is a timestamp difference of ban file to iLastReadInstance (= probably due to changed ban entries)
+	// -> reload ban file into memory. Rewrite ban file (e.g. adding human-readable Information) then, if its timestamp differs from FILE_BAN_LASTWRITE
+	if( iLastReadInstance 		!= (ft = GetFileTime(FILE_BAN, FileTime_LastChange)) )
+	{
+		ArrayList hArrayBan;
+		static char sTime[32], sBuffer[128], sPair[ 4 ][ 22 ], buffer[16];
+		static int iTime, iDays, iHours, iMinutes;
+
+		if (GetFileTime(FILE_BAN_LASTWRITE, FileTime_LastChange) != ft)
+			bSaveBanFile = true;	// ban file has been changed, add human-readable information using SaveBanFile()
+		else
+			// Another server instance of this plugin had loaded the ban file and had called SaveBanList() in order to add human-readable information to the file
+			// This instance still needs to load the ban file, but no longer needs to call SaveBanList() 
+			// iLastReadInstance = ft; to prevent this instance from reloading the ban file next time a map change occours
+			iLastReadInstance = ft;	
+
+		// Delete all entries from memory before reloading the ban file
+		hMapBanStart.Clear();
+		hMapBanStop.Clear();
+		hMapBanSelfnote.Clear();
+		
+		hArrayBan = new ArrayList(ByteCountToCells(64));
+		ReadFileToArrayList(FILE_BAN, 	hArrayBan);
+		
+		for( int i = 0; i < hArrayBan.Length; i++ )
+		{
+			hArrayBan.GetString(i, sBuffer, sizeof(sBuffer));
+			if( StrContains(sBuffer, "//") == -1 )
+			{
+				if ( ExplodeString( sBuffer, ",", sPair, sizeof(sPair), sizeof(sPair[ ]) ) > 3 )
+				{
+					// remove leading and trailing whitespaces from strings
+					TrimString(sPair[0]); TrimString(sPair[1]); TrimString(sPair[2]); TrimString(sPair[3]);
+					
+					// Regex to detect incorrect ban entries -> these entries are omitted
+					if ( sPair[2][0] && hRegexSteamid.Match( sPair[0] ) && hRegexDigitsZero.Match( sPair[1] ) && ( hRegexDigits.Match( sPair[2] ) || hRegexStrDhm.Match( sPair[2] ) ) )
+					{
+						// Start time
+						if (!sPair[1][0]) // no Unix time specified -> start of the ban for the player is the timestamp of the ban file
+						{
+							iTime = ft;
+							bSaveBanFile = true;
+						}
+						else
+							iTime = StringToInt( sPair[1] );
+					
+						// Ban period
+						if ( hRegexDigits.Match( sPair[2] ) ) 
+							iMinutes = StringToInt( sPair[2] );
+						else
+						{
+							iDays = ( hRegexStrDhm.GetSubString( 1, buffer, sizeof(buffer), 0 ) ) ? StringToInt ( buffer ) : 0 ;
+							iHours = ( hRegexStrDhm.GetSubString( 2, buffer, sizeof(buffer), 0 ) ) ? StringToInt ( buffer ) : 0 ;
+							iMinutes = ( hRegexStrDhm.GetSubString( 3, buffer, sizeof(buffer), 0 ) ) ? StringToInt ( buffer ) : 0 ;
+							iMinutes = iDays * 1440 + iHours * 60 + iMinutes ;
+							bSaveBanFile = true;
+						}
+						
+						if ( iTime + iMinutes * 60 > GetTime() ) // Ban period has not expired or is in the future
+						{
+							FormatEx( sTime, sizeof(sTime), "%i", iTime );
+							hMapBanStart.SetString( sPair[0], sTime, true );
+							FormatEx( sTime, sizeof(sTime), "%i", iTime + iMinutes * 60 );
+							hMapBanStop.SetString( sPair[0], sTime, true );
+							hMapBanSelfnote.SetString( sPair[0], sPair[3], true );
+						}
+						else
+							bSaveBanFile = true; // delete expired ban from file
+					}
+					else
+						bSaveBanFile = true; // delete wrong format ban from file
+				}
+			}
+		}
+		if ( bSaveBanFile )
+		{
+			SaveBanList(); // Rewrites the ban file from memory: Adds a Unix timestamp for start if not specified. Adds information about the start and end of the ban in a human-readable format. Delete expired bans.
+			iLastReadInstance = GetFileTime(FILE_BAN, FileTime_LastChange);  // Updates iLastReadInstance to prevent this plugin instance from reading the same ban entries into memory a second time
+		}
+	}	
+}
+
+void SaveBanList( bool bDelExpiredBan = false, const char[] sExpiredBanSteamId = "" )
+{
+
+	if ( bDelExpiredBan ) // delete expired ban from file, called by OnClientAuthorized
+	{
+		static char sBuffer[128];
+		ArrayList hArrayBan;
+		
+		hArrayBan = new ArrayList(ByteCountToCells(128));
+		
+		ReadFileToArrayList(FILE_BAN, hArrayBan);
+		
+		Handle hFile = OpenFile(FILE_BAN, "wt");
+		
+		for( int i = 0; i < hArrayBan.Length; i++ )
+		{
+			hArrayBan.GetString(i, sBuffer, sizeof(sBuffer));
+			if( StrContains(sBuffer, sExpiredBanSteamId) == -1 )
+				WriteFileLine( hFile, sBuffer );
+		}
+		CloseHandle(hFile);
+		hFile = OpenFile(FILE_BAN_LASTWRITE, "w"); // Set new timestamp. Prevents writing th same ban entries again.
+		CloseHandle(hFile);
+
+		return;
+	}
+
+	Handle hFile = OpenFile(FILE_BAN, "wt");
+	WriteFileLine(hFile, "//	l4d_votekick: simple temporary bans");
+	WriteFileLine(hFile, "//	Format:");
+	WriteFileLine(hFile, "//	[Steam-ID],[Empty]OR[Unix timestamp],[Minutes]OR[d h m]OR[dhm],[Empty]OR[Self note]");
+	WriteFileLine(hFile, "//	Explanation:");
+	WriteFileLine(hFile, "//	Steam-ID,Start of ban,Duration in minutes OR dhm-String,Self note (e.g. nickname of banned player)");
+	WriteFileLine(hFile, "//	After each file change, the Votekick plugin writes a Unix timestamp (start of ban) and adds the following");
+	WriteFileLine(hFile, "//	to the end of the line: ', == Start YYYY-MM-DD HH:MM:SS<->Stop YYYY-MM-DD HH:MM:SS'");
+	WriteFileLine(hFile, "//");
+	WriteFileLine(hFile, "////////////////////////////////");
+	WriteFileLine(hFile, "//	Examples:");
+	WriteFileLine(hFile, "//");
+	WriteFileLine(hFile, "//	STEAM_1:0:12345678,,360,				= Start of ban: now, duration: 360 minutes (6h), self note: none");
+	WriteFileLine(hFile, "//	STEAM_1:0:12345678,,360m,				= same result as above");
+	WriteFileLine(hFile, "//	STEAM_1:0:12345678,,1440,Dagobert			= Start of ban: now, duration 1440m (1d), self note: Dagobert");
+	WriteFileLine(hFile, "//	STEAM_1:0:12345678,,1d,Dagobert				= same result as above");
+	WriteFileLine(hFile, "//	STEAM_1:0:12345678,,24h,Dagobert			= same result as above");
+	WriteFileLine(hFile, "//	STEAM_1:1:12345678,1713214999,4320,Donald 		= Start 2024-04-15 23:03:19, duration: 4320m (3d), self note: Donald");
+	WriteFileLine(hFile, "//	STEAM_1:1:12345678,1713214999,2d 24h,Donald 		= same result as above");
+	WriteFileLine(hFile, "//	STEAM_1:1:12345678,1713214999,1d 24h 1440m,Donald	= same result as above");
+	WriteFileLine(hFile, "//");
+	WriteFileLine(hFile, "////////////////////////////////");
+
+	StringMapSnapshot hSnap = hMapBanStart.Snapshot();
+	if( hSnap )
+	{
+		static char sTime[32], sTime2[32], sSteam[64], sSelfnote[32], sStartDate[20], sStopDate[20], sMinutes[10], sBuffer[128];
+		static int iTime, iTime2, iMinutes;
+		for( int i = 0; i < hSnap.Length; i++ )
+		{
+			hSnap.GetKey( i, sSteam, sizeof(sSteam) );
+			hMapBanStart.GetString( sSteam, sTime, sizeof(sTime) );
+			hMapBanStop.GetString( sSteam, sTime2, sizeof(sTime2) );
+			hMapBanSelfnote.GetString( sSteam, sSelfnote, sizeof(sSelfnote) );
+			iTime = StringToInt( sTime );
+			iTime2 = StringToInt( sTime2 );
+			FormatTime( sStartDate , sizeof(sStartDate) , "%Y-%m-%d %H:%M:%S", iTime );
+			FormatTime( sStopDate , sizeof(sStopDate) , "%Y-%m-%d %H:%M:%S", iTime2 );
+			iMinutes = ( iTime2 - iTime ) / 60;
+			FormatEx( sMinutes , sizeof( sMinutes ) , "%i", iMinutes );
+			FormatEx( sBuffer, sizeof(sBuffer), "%s,%s,%s,%s, == Start %s<->Stop %s", sSteam, sTime, sMinutes, sSelfnote, sStartDate, sStopDate );
+			WriteFileLine( hFile, sBuffer, false );
+		}
+		delete hSnap;
+	}
+	CloseHandle(hFile);
+
+	hFile = OpenFile(FILE_BAN_LASTWRITE, "w"); // Set new timestamp. Prevents writing th same ban entries again.
+	CloseHandle(hFile);
 }
