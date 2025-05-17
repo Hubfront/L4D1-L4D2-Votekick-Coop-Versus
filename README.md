@@ -30,6 +30,8 @@ Features:
     - ability to exclude a list of users you may not want to connect for a given time period. Excluded users receive the message "STEAM UserID is banned."
 	 
         * See the file: data/votekick_ban.txt (if not present, create it by setting cvar sm_votekick_use_banfile set to "1" in cfg-file)
+    
+    - the voting kick for the team is as short as possible: in Coop and in Versus the counter vote for an active player is cast automatically (similar to official L4D behaviour)
 
 
 Logfile location:
