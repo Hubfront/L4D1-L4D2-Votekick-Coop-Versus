@@ -86,6 +86,7 @@ Settings (ConVars):
     - sm_votekick_show_vote_details - def.: 1 - Allow to show number of yesVotes - noVotes? (1 - Yes / 0 - No)
     - sm_votekick_use_banfile - def.: 0 - Use file based temporary bans? (1 - Yes / 0 - No)
     - sm_votekick_use_banfile_log - def.: 1 - File based temporary bans: log attempts to join the server? (1 - Yes / 0 - No)
+    - sm_votekick_versus_inactive_time - def.: 45 - Time (in sec.) after which an inactive player is considered AFK. In a kick vote against him, he can then only vote manually
 
 Commands:
 
