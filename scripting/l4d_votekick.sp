@@ -1105,10 +1105,15 @@ void StartVoteKick(int client, int target)
 		LogVoteAction(0, "[REASON] %s", sReasonEng);
 		
 		if ( !g_bTargetManualVote ) {
-			if ( TranslationPhraseExists("note_to_target_autovote") )
-				CPrintToChat(target, "%t", "note_to_target_autovote"); // "Note: Your vote against will be cast automatically" -- added to phrases.txt in v4.4
+			if ( TranslationPhraseExists("note_to_target_automatic_vote") )
+				CPrintToChat(target, "%t", "note_to_target_automatic_vote"); // "Note: Your vote against will be cast automatically" -- added to phrases.txt in v4.4
 			else
-				CPrintToChat(target, "Note: Your vote against will be cast automatically"); // compatibility with v3.5 phrases.txt
+				CPrintToChat(target, "Note: Your vote against will be cast automatically"); // Fallback, compatibility with v3.5 phrases.txt
+		} else {
+			if ( TranslationPhraseExists("note_to_target_manual_vote") )
+				CPrintToChat(target, "%t", "note_to_target_manual_vote"); // "Since you are inactive, you must manually vote against it" -- added to phrases.txt in v4.4
+			else
+				CPrintToChat(target, "Since you are inactive, you need to vote manually against it"); // Fallback, compatibility with v3.5 phrases.txt
 		}
 
 		CPrintToChatAll("%t \x01(%t %t\x01)", "vote_started", client, g_sName, "Reason", sReasonEng);
@@ -1117,10 +1122,15 @@ void StartVoteKick(int client, int target)
 	else
 	{
 		if ( !g_bTargetManualVote ) {
-			if ( TranslationPhraseExists("note_to_target_autovote") )
-				CPrintToChat(target, "%t", "note_to_target_autovote"); // "Note: Your vote against will be cast automatically" -- added to phrases.txt in v4.4
+			if ( TranslationPhraseExists("note_to_target_automatic_vote") )
+				CPrintToChat(target, "%t", "note_to_target_automatic_vote"); // "Note: Your vote against will be cast automatically" -- added to phrases.txt in v4.4
 			else
 				CPrintToChat(target, "Note: Your vote against will be cast automatically"); // compatibility with v3.5 phrases.txt
+		} else {
+			if ( TranslationPhraseExists("note_to_target_manual_vote") )
+				CPrintToChat(target, "%t", "note_to_target_manual_vote"); // "Since you are inactive, you must manually vote against it" -- added to phrases.txt in v4.4
+			else
+				CPrintToChat(target, "Since you are inactive, you need to vote manually against it"); // Fallback, compatibility with v3.5 phrases.txt
 		}
 
 		CPrintToChatAll("%t", "vote_started", client, g_sName); // %N is started vote for kick: %s

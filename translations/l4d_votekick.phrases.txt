@@ -204,9 +204,15 @@
 		"en"		"STEAM UserID %s is banned"
 		"ru"		"STEAM UserID %s забанен"
 	}
-	"note_to_target_autovote"
+	"note_to_target_automatic_vote"
 	{
 		"en"		"Note: Your vote against will be cast automatically"		
 		"ru"		"Примечание: Ваш «нет»-голос будет учтен автоматически"
 	}
+	"note_to_target_manual_vote"
+	{
+		"en"		"Since you are inactive, you need to vote manually against it"		
+		"ru"		"Поскольку вы неактивны, вам придется проголосовать вручную."
+	}
+
 }
