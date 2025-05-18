@@ -137,7 +137,7 @@ public Plugin myinfo =
 	 - Fixed a bug where in some cases a game server restart was required to create data/votekick_ban.txt
 	 - Updated description
 
-	4.4 (17-May-2025)
+	4.4 (18-May-2025)
 	 - Improvement: Faster kick vote: in Coop and in Versus the counter vote for an active player is cast automatically 
 	   After a period of inactivity, he can only vote manually (Coop: depends on server config, Versus: CVAR sm_votekick_versus_inactive_time (Default: 45 sec)
 	   This behavior is similar to the official L4D kick behavior during voting in both L4D game modes
