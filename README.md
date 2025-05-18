@@ -1,7 +1,6 @@
 Description:
 
-    This plugin replaces the black screen kick vote by a translucent menu. 
-	It is a fork of the discontinued plugin “[L4D1 & L4D2] Votekick – no black screen (Coop & Versus)” from Dragokas.
+    This plugin is a fork of the discontinued plugin “[L4D1 & L4D2] Votekick – no black screen (Coop & Versus)” from Dragokas.
 
     My motivation of the fork is mainly:
     - fix bugs
