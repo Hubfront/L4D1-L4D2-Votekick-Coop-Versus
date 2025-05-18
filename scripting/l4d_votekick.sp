@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "4.3"
+#define PLUGIN_VERSION "4.4"
 
 #pragma newdecls required
 #pragma semicolon 1
@@ -144,9 +144,12 @@ public Plugin myinfo =
 	   It is designed to keep the voting kick for the team as short as possible, especially helpful in competitive games
 	   CVAR (Versus):
 	   * sm_votekick_versus_inactive_time (Default: 45 sec)
+	 Bugfixes:
 	 - Fixed a bug where kickvoting wouldn't work in Coop mode if the player was inactive.
 	 - Code optimizations
-	 - updated phrases.txt
+	 Minor changes:
+	 - Cosmetic changes (banfile description)
+	 - Updated phrases.txt
 	 - Updated description
 	 
 	Please note: for completeness, the following changelog has been copied from Dragokas' plugin "[L4D] Votekick (no black screen)", version 3.5.
@@ -303,7 +306,7 @@ public void OnPluginStart()
 	g_hCvarShowVoteDetails = CreateConVar(		"sm_votekick_show_vote_details",	"1",			"Allow to show mumber of yesVotes - noVotes? (1 - Yes / 0 - No)", CVAR_FLAGS );	
 	g_hCvarUseBanfile = CreateConVar(			"sm_votekick_use_banfile",			"0",			"Use file based temporary bans? (1 - Yes / 0 - No)", CVAR_FLAGS );	
 	g_hCvarUseBanfileLog = CreateConVar(		"sm_votekick_use_banfile_log",		"1",			"File based temporary bans: log attempts to join the server? (1 - Yes / 0 - No)", CVAR_FLAGS );	
-	g_hCvarVersusInactiveTime = CreateConVar(	"sm_votekick_versus_inactive_time",	"1",			"Time (in sec.) after which an inactive player is considered AFK. In a kick vote against him, he can then only vote manually", CVAR_FLAGS );	
+	g_hCvarVersusInactiveTime = CreateConVar(	"sm_votekick_versus_inactive_time",	"45",			"Time (in sec.) after which an inactive player is considered AFK. In a kick vote against him, he can then only vote manually", CVAR_FLAGS );	
 	
 	AutoExecConfig(true,				"sm_votekick");
 	
@@ -1753,9 +1756,8 @@ void SaveBanList( bool bDelExpiredBan = false, const char[] sExpiredBanSteamId =
 	WriteFileLine(hFile, "//	Format: [Steam-ID],[Empty]OR[Unix timestamp],[Minutes]OR[d h m]OR[dhm],[Empty]OR[Self note]");
 	WriteFileLine(hFile, "//	Explanation: Steam-ID,Begin of ban,Duration in minutes OR dhm-String,Self note string");
 	WriteFileLine(hFile, "//	l4d_votekick sets the begin of the ban to a Unix timestamp and adds human readable");
-	WriteFileLine(hFile, "//	information to each entry: ', (Begin YYYY-MM-DD HH:MM:SS <-> End YYYY-MM-DD HH:MM:SS')");
-	WriteFileLine(hFile, "//");
-	WriteFileLine(hFile, "//	Examples of entries:");
+	WriteFileLine(hFile, "//	information to each entry: ',(== Begin YYYY-MM-DD HH:MM:SS <-> End YYYY-MM-DD HH:MM:SS')");
+	WriteFileLine(hFile, "//	Examples:");
 	WriteFileLine(hFile, "//	STEAM_1:0:12345678,,360,				= Begin of ban: now, duration: 360 minutes (6h), self note: none");
 	WriteFileLine(hFile, "//	STEAM_1:0:12345678,,360m,				= same result as above");
 	WriteFileLine(hFile, "//	STEAM_1:0:12345678,,1440,Dagobert			= Begin of ban: now, duration 1440m (1d), self note: Dagobert");
@@ -1784,7 +1786,7 @@ void SaveBanList( bool bDelExpiredBan = false, const char[] sExpiredBanSteamId =
 			FormatTime( sStopDate , sizeof(sStopDate) , "%Y-%m-%d %H:%M:%S", iTime2 );
 			iMinutes = ( iTime2 - iTime ) / 60;
 			FormatEx( sMinutes , sizeof( sMinutes ) , "%i", iMinutes );
-			FormatEx( sBuffer, sizeof(sBuffer), "%s,%s,%s,%s, (Begin %s <-> End %s)", sSteam, sTime, sMinutes, sSelfnote, sStartDate, sStopDate );
+			FormatEx( sBuffer, sizeof(sBuffer), "%s,%s,%s,%s,(== Begin %s <-> End %s)", sSteam, sTime, sMinutes, sSelfnote, sStartDate, sStopDate );
 			WriteFileLine( hFile, sBuffer, false );
 		}
 		delete hSnap;
