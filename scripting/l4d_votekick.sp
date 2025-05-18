@@ -146,8 +146,8 @@ public Plugin myinfo =
 	   * sm_votekick_versus_inactive_time (Default: 45 sec)
 	 Bugfixes:
 	 - Fixed a bug where kickvoting wouldn't work in Coop mode if the player was inactive.
-	 - Code optimizations
 	 Minor changes:
+	 - Code optimizations
 	 - Cosmetic changes (banfile description)
 	 - Updated phrases.txt
 	 - Updated description
