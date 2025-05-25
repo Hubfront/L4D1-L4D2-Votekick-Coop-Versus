@@ -137,7 +137,7 @@ public Plugin myinfo =
 	 - Fixed a bug where in some cases a game server restart was required to create data/votekick_ban.txt
 	 - Updated description
 
-	4.4 (18-May-2025)
+	4.4 (17-May-2025)
 	 - Improvement: Faster kick vote: in Coop and in Versus the counter vote for an active player is cast automatically 
 	   After a period of inactivity, he can only vote manually (Coop: depends on server config, Versus: CVAR sm_votekick_versus_inactive_time (Default: 45 sec)
 	   This behavior is similar to the official L4D kick behavior during voting in both L4D game modes
@@ -146,8 +146,8 @@ public Plugin myinfo =
 	   * sm_votekick_versus_inactive_time (Default: 45 sec)
 	 Bugfixes:
 	 - Fixed a bug where kickvoting wouldn't work in Coop mode if the player was inactive.
-	 Minor changes:
 	 - Code optimizations
+	 Minor changes:
 	 - Cosmetic changes (banfile description)
 	 - Updated phrases.txt
 	 - Updated description
@@ -1766,8 +1766,9 @@ void SaveBanList( bool bDelExpiredBan = false, const char[] sExpiredBanSteamId =
 	WriteFileLine(hFile, "//	Format: [Steam-ID],[Empty]OR[Unix timestamp],[Minutes]OR[d h m]OR[dhm],[Empty]OR[Self note]");
 	WriteFileLine(hFile, "//	Explanation: Steam-ID,Begin of ban,Duration in minutes OR dhm-String,Self note string");
 	WriteFileLine(hFile, "//	l4d_votekick sets the begin of the ban to a Unix timestamp and adds human readable");
-	WriteFileLine(hFile, "//	information to each entry: ',(== Begin YYYY-MM-DD HH:MM:SS <-> End YYYY-MM-DD HH:MM:SS')");
-	WriteFileLine(hFile, "//	Examples:");
+	WriteFileLine(hFile, "//	information to each entry: ', (Begin YYYY-MM-DD HH:MM:SS <-> End YYYY-MM-DD HH:MM:SS)'");
+	WriteFileLine(hFile, "//");
+	WriteFileLine(hFile, "//	Examples of entries:");
 	WriteFileLine(hFile, "//	STEAM_1:0:12345678,,360,				= Begin of ban: now, duration: 360 minutes (6h), self note: none");
 	WriteFileLine(hFile, "//	STEAM_1:0:12345678,,360m,				= same result as above");
 	WriteFileLine(hFile, "//	STEAM_1:0:12345678,,1440,Dagobert			= Begin of ban: now, duration 1440m (1d), self note: Dagobert");
@@ -1796,7 +1797,7 @@ void SaveBanList( bool bDelExpiredBan = false, const char[] sExpiredBanSteamId =
 			FormatTime( sStopDate , sizeof(sStopDate) , "%Y-%m-%d %H:%M:%S", iTime2 );
 			iMinutes = ( iTime2 - iTime ) / 60;
 			FormatEx( sMinutes , sizeof( sMinutes ) , "%i", iMinutes );
-			FormatEx( sBuffer, sizeof(sBuffer), "%s,%s,%s,%s,(== Begin %s <-> End %s)", sSteam, sTime, sMinutes, sSelfnote, sStartDate, sStopDate );
+			FormatEx( sBuffer, sizeof(sBuffer), "%s,%s,%s,%s, (Begin %s <-> End %s)", sSteam, sTime, sMinutes, sSelfnote, sStartDate, sStopDate);
 			WriteFileLine( hFile, sBuffer, false );
 		}
 		delete hSnap;
