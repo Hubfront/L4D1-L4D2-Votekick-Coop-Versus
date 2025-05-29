@@ -1763,8 +1763,11 @@ void SaveBanList( bool bDelExpiredBan = false, const char[] sExpiredBanSteamId =
 	Handle hFile = OpenFile(FILE_BAN, "wt");
 	WriteFileLine(hFile, "//	l4d_votekick: simple temporary bans");
 	WriteFileLine(hFile, "//");
-	WriteFileLine(hFile, "//	Format: [Steam-ID],[Empty]OR[Unix timestamp],[Minutes]OR[d h m]OR[dhm],[Empty]OR[Self note]");
-	WriteFileLine(hFile, "//	Explanation: Steam-ID,Begin of ban,Duration in minutes OR dhm-String,Self note string");
+	WriteFileLine(hFile, "//	Format:");
+	WriteFileLine(hFile, "//	[Steam-ID],[Empty]OR[Unix timestamp],[Minutes]OR[d h m]OR[dhm],[Empty]OR[Self note]");
+	WriteFileLine(hFile, "//");
+	WriteFileLine(hFile, "//	Explanation:");
+	WriteFileLine(hFile, "//	Steam-ID,Begin of ban,Duration in minutes OR dhm-String,Self note string");
 	WriteFileLine(hFile, "//	l4d_votekick sets the begin of the ban to a Unix timestamp and adds human readable");
 	WriteFileLine(hFile, "//	information to each entry: ', (Begin YYYY-MM-DD HH:MM:SS <-> End YYYY-MM-DD HH:MM:SS)'");
 	WriteFileLine(hFile, "//");
