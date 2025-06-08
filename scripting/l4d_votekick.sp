@@ -276,8 +276,8 @@ ArrayList g_hArrayVoteBlock, g_hArrayVoteReason;
 StringMap hMapSteam, hMapPlayerName, hMapPlayerTeam, hMapBanStart, hMapBanStop, hMapBanSelfnote;
 Regex hRegexSteamid, hRegexDigitsZero, hRegexDigits, hRegexStrDhm;
 char g_sSteam[64], g_sIP[32], g_sCountry[4], g_sName[MAX_NAME_LENGTH], g_sLog[PLATFORM_MAX_PATH];
-int g_iKickUserId, g_iLastTime[MAXPLAYERS+1], g_iKickTarget[MAXPLAYERS+1], g_iReason, g_iVoteIssuerTeam, g_iTime_Offset[MAXPLAYERS+1], g_iLastbuttons[MAXPLAYERS+1];
-bool g_bVeto, g_bVotepass, g_bVoteInProgress, g_bVoteDisplayed, g_bTooOften[MAXPLAYERS+1], g_bIsVersus, g_bRegexExists = false, g_bTargetManualVote ;
+int g_iKickUserId, g_iIssuerUserId, g_iLastTime[MAXPLAYERS+1], g_iKickTarget[MAXPLAYERS+1], g_iReason, g_iVoteIssuerTeam, g_iTime_Offset[MAXPLAYERS+1], g_iLastbuttons[MAXPLAYERS+1], g_iNum_Clients;
+bool g_bVeto, g_bVotepass, g_bVoteInProgress, g_bVoteDisplayed, g_bTooOften[MAXPLAYERS+1], g_bIsVersus, g_bRegexExists = false, g_bTargetManualVote, g_bVoteNoButtonPressed ;
 
 // ConVars
 ConVar g_hCvarDelay, g_hCvarKickTime, g_hCvarAnnounceDelay, g_hCvarTimeout, g_hCvarLog, g_hMinPlayers, g_hCvarAccessFlag, g_hCvarVetoFlag;
@@ -560,9 +560,9 @@ public void OnAllPluginsLoaded()
 	}
 }
 
-public Action CheckVote(int client, char[] command, int args)
+public Action CheckVote(int issuer, char[] command, int args)
 {
-	if( client == 0 || !IsClientInGame(client) )
+	if( issuer == 0 || !IsClientInGame(issuer) )
 		return Plugin_Stop;
 	
 	char s[MAX_NAME_LENGTH];
@@ -574,7 +574,7 @@ public Action CheckVote(int client, char[] command, int args)
 			if( UserId ) {
 				int target = GetClientOfUserId(UserId);
 				if( target && IsClientInGame(target) )
-					StartVoteAccessCheck(client, target);
+					StartVoteAccessCheck(issuer, target);
 			}
 			return Plugin_Stop;
 		}
@@ -582,14 +582,14 @@ public Action CheckVote(int client, char[] command, int args)
 	return Plugin_Continue;
 }
 
-public Action Command_Votekick(int client, int args)
+public Action Command_Votekick(int issuer, int args)
 {
-	if( client ) CreateVotekickMenu(client);
+	if( issuer ) CreateVotekickMenu(issuer);
 	return Plugin_Handled;
 }
 
 
-void CreateVotekickMenu(int client)
+void CreateVotekickMenu(int issuer)
 {
 	Menu menu = new Menu(Menu_Votekick, MENU_ACTIONS_DEFAULT);
 	static char name[MAX_NAME_LENGTH];
@@ -598,14 +598,14 @@ void CreateVotekickMenu(int client)
 	static char ip[32];
 	static char code[4];
 	
-	int iIssuerTeam = GetClientTeam(client);
+	int iIssuerTeam = GetClientTeam(issuer);
 	int iTargetTeam;
 	
 	for( int i = 1; i <= MaxClients; i++ )
 	{
 		if( IsClientInGame(i) )
 		{
-			if( i == client && !g_bCvarShowSelf )
+			if( i == issuer && !g_bCvarShowSelf )
 				continue;
 			
 			if( IsFakeClient(i) )
@@ -668,15 +668,15 @@ void CreateVotekickMenu(int client)
 			// Add banned player to menu for possible unkick. Specific to Versus mode: Only the team (logical team number, see also GetLogicalTeam) that kicked the player can then unkick him again
 			//
 			if( !(g_bIsVersus && GetLogicalTeam(iIssuerTeam) != iPlayerLogicalTeam) ) {	
-				Format(menuItem, sizeof(menuItem), "%s %s %T", g_sCharKicked, name, "time_left", client, (g_iCvarKickTime - (GetTime() - iTime)) / 60);  
+				Format(menuItem, sizeof(menuItem), "%s %s %T", g_sCharKicked, name, "time_left", issuer, (g_iCvarKickTime - (GetTime() - iTime)) / 60);  
 				menu.AddItem(sSteam, menuItem);
 			}
 		}
 		delete hSnap;
 	}
 	
-	menu.SetTitle("%T", "Player To Kick", client);
-	menu.Display(client, MENU_TIME_FOREVER);
+	menu.SetTitle("%T", "Player To Kick", issuer);
+	menu.Display(issuer, MENU_TIME_FOREVER);
 }
 
 public int Menu_Votekick(Menu menu, MenuAction action, int param1, int param2)
@@ -704,64 +704,64 @@ public int Menu_Votekick(Menu menu, MenuAction action, int param1, int param2)
 	return 0;
 }
 
-void StartVoteAccessCheck_UnKick(int client, char[] sSteam)
+void StartVoteAccessCheck_UnKick(int issuer, char[] sSteam)
 {
 	if( IsVoteInProgress() || g_bVoteInProgress ) {
-		CPrintToChat(client, "%t", "other_vote");
-		LogVoteAction(client, "[DENY] Reason: another vote is in progress.");
+		CPrintToChat(issuer, "%t", "other_vote");
+		LogVoteAction(issuer, "[DENY] Reason: another vote is in progress.");
 		return;
 	}
 
-	if( !IsVoteAllowed(client, -1) )
+	if( !IsVoteAllowed(issuer, -1) )
 	{
-		if( g_bTooOften[client] )
+		if( g_bTooOften[issuer] )
 		{
-			// silence, no need to inform everyone except the client that he voted too often, this behavior is the same as the L4D votekick engine
-			g_bTooOften[client] = false;
+			// silence, no need to inform everyone except the issuer that he voted too often, this behavior is the same as the L4D votekick engine
+			g_bTooOften[issuer] = false;
 			return;
 		}
 		else
 		{	
 			char name[MAX_NAME_LENGTH];
 			hMapPlayerName.GetString(sSteam, name, sizeof(name));
-			CPrintToChatAll("%t", "no_access_specific_unkick", client, name); // "%s tried to use votekick against %s, but has no access."
-			LogVoteAction(client, "[NO ACCESS]");
+			CPrintToChatAll("%t", "no_access_specific_unkick", issuer, name); // "%s tried to use votekick against %s, but has no access."
+			LogVoteAction(issuer, "[NO ACCESS]");
 			LogToFileEx(g_sLog, "[TRIED] to un-kick against: %s", name);
 			return;
 		}
 	}
 
-	StartVoteUnKick(client, sSteam);
+	StartVoteUnKick(issuer, sSteam);
 }
 
-void StartVoteAccessCheck(int client, int target)
+void StartVoteAccessCheck(int issuer, int target)
 {
 	if( IsVoteInProgress() || g_bVoteInProgress ) {
-		CPrintToChat(client, "%t", "other_vote");
-		LogVoteAction(client, "[DENY] Reason: another vote is in progress.");
+		CPrintToChat(issuer, "%t", "other_vote");
+		LogVoteAction(issuer, "[DENY] Reason: another vote is in progress.");
 		return;
 	}
 
 	if( target == 0 || !IsClientInGame(target) )
 	{
-		CPrintToChat(client, "%t", "not_in_game"); // "Client is already disconnected."
+		CPrintToChat(issuer, "%t", "not_in_game"); // "Client is already disconnected."
 		return;
 	}
 	
-	if( !IsVoteAllowed(client, target) )
+	if( !IsVoteAllowed(issuer, target) )
 	{
-		if( g_bTooOften[client] )
+		if( g_bTooOften[issuer] )
 		{
-			// silence, no need to inform everyone except the client that he voted too often, this behavior is the same as the L4D votekick engine
-			g_bTooOften[client] = false;
+			// silence, no need to inform everyone except the issuer that he voted too often, this behavior is the same as the L4D votekick engine
+			g_bTooOften[issuer] = false;
 			return;
 		}
 		else
 		{	
 			char name[MAX_NAME_LENGTH];
 			GetClientName(target, name, sizeof(name));
-			CPrintToChatAll("%t", "no_access_specific", client, name); // "%s tried to use votekick against %s, but has no access."
-			LogVoteAction(client, "[NO ACCESS]");
+			CPrintToChatAll("%t", "no_access_specific", issuer, name); // "%s tried to use votekick against %s, but has no access."
+			LogVoteAction(issuer, "[NO ACCESS]");
 			LogVoteAction(target, "[TRIED] to kick against:");
 			return;
 		}
@@ -769,15 +769,15 @@ void StartVoteAccessCheck(int client, int target)
 	
 	if( g_bCvarShowKickReason )
 	{
-		g_iKickTarget[client] = GetClientUserId(target);
-		ShowMenuReason(client);
+		g_iKickTarget[issuer] = GetClientUserId(target);
+		ShowMenuReason(issuer);
 	}
 	else {
-		StartVoteKick(client, target);
+		StartVoteKick(issuer, target);
 	}
 }
 
-void ShowMenuReason(int client)
+void ShowMenuReason(int issuer)
 {
 	char sReason[64];
 	Menu menu = new Menu(Menu_Reason, MENU_ACTIONS_DEFAULT);
@@ -785,11 +785,11 @@ void ShowMenuReason(int client)
 	for( int i = 0; i < g_hArrayVoteReason.Length; i++ )
 	{
 		g_hArrayVoteReason.GetString(i, sReason, sizeof(sReason));
-		Format(sReason, sizeof(sReason), "%T", sReason, client);
+		Format(sReason, sizeof(sReason), "%T", sReason, issuer);
 		menu.AddItem("", sReason);
 	}
-	menu.SetTitle("%T:", "Reason_Menu", client);
-	menu.Display(client, MENU_TIME_FOREVER);
+	menu.SetTitle("%T:", "Reason_Menu", issuer);
+	menu.Display(issuer, MENU_TIME_FOREVER);
 }
 
 public int Menu_Reason(Menu menu, MenuAction action, int param1, int param2)
@@ -801,7 +801,7 @@ public int Menu_Reason(Menu menu, MenuAction action, int param1, int param2)
 
 		case MenuAction_Cancel:
 		{
-			// client (id: param1) has decided not to not start the vote (Cancel) -> 
+			// issuer (id: param1) has decided not to not start the vote (Cancel) -> 
 			// his 60-second penalty set in IsVote Allowed is therefore reduced, allowing him to reopen the VK menu shortly afterwards
 			// The remaining delay is to avoid stressing the server (2 seconds should be enough) by intentionally spamming the command to open the menu.
 			g_iLastTime[param1] = 2;
@@ -819,7 +819,7 @@ public int Menu_Reason(Menu menu, MenuAction action, int param1, int param2)
 				{
 					if ( g_bIsVersus )
 					{
-						if ( GetClientTeam(target) == GetClientTeam(param1) )  // Before voting starts, check also if target is still on the same team as client, as the Reason menu can be open forever before client selects
+						if ( GetClientTeam(target) == GetClientTeam(param1) )  // Before voting starts, check also if target is still on the same team as issuer, as the Reason menu can be open forever before issuer selects
 						{
 							g_iReason = param2;
 							StartVoteKick(param1, target);
@@ -852,10 +852,10 @@ int GetRealTeamClientCount(int iTeam) {
         return cnt;
 }
 
-bool IsVoteAllowed(int client, int target)
+bool IsVoteAllowed(int issuer, int target)
 {
 	
-	bool bHasVoteAccessFlagClient = HasVoteAccessFlag(client);
+	bool bHasVoteAccessFlagClient = HasVoteAccessFlag(issuer);
 
 	if( target != -1)
 	{
@@ -863,26 +863,26 @@ bool IsVoteAllowed(int client, int target)
 			return false;
 	
 		// This comparison does not trigger an "Exception reported: Client index -1 is invalid", but logically precedes the subsequent comparison 
-		if( client == target && bHasVoteAccessFlagClient )
+		if( issuer == target && bHasVoteAccessFlagClient )
 			return true;
 	
 		if( IsClientRootAdmin(target) )
 			return false;
 	}
 	
-	if( IsClientRootAdmin(client) )
+	if( IsClientRootAdmin(issuer) )
 		return true;
 	
-	if( g_iLastTime[client] != 0 )
+	if( g_iLastTime[issuer] != 0 )
 	{
-		if( g_iLastTime[client] + g_iCvarDelay > GetTime() ) {
-			CPrintToChat(client, "%t", "too_often"); // "You can't vote too often!"
-			LogVoteAction(client, "[DENY] Reason: too often.");
-			g_bTooOften[client] = true;
+		if( g_iLastTime[issuer] + g_iCvarDelay > GetTime() ) {
+			CPrintToChat(issuer, "%t", "too_often"); // "You can't vote too often!"
+			LogVoteAction(issuer, "[DENY] Reason: too often.");
+			g_bTooOften[issuer] = true;
 			return false;
 		}
 	}
-	g_iLastTime[client] = GetTime();
+	g_iLastTime[issuer] = GetTime();
 	
 	// Check if there are enough players in order to vote for kick/unkick. 
 	// Versus minimum may be set differently, cfg variable "sm_votekick_minplayers_versus"
@@ -890,15 +890,15 @@ bool IsVoteAllowed(int client, int target)
 	int iClients = GetRealClientCount();
 	int iMinPlayers = 0;
 	if ( g_bIsVersus ) {
-		iClients = GetRealTeamClientCount( GetClientTeam(client) ); //Versus: only team of issuer is allowed to vote
+		iClients = GetRealTeamClientCount( GetClientTeam(issuer) ); //Versus: only team of issuer is allowed to vote
 		iMinPlayers = g_iMinPlayersVersus;
 	}
 	else {
 		iMinPlayers = g_iMinPlayers;
 	}
 	if( iClients < iMinPlayers ) {
-		CPrintToChat(client, "%t", "not_enough_players", iMinPlayers); // "Not enough players to start the vote. Required minimum: %i"
-		LogVoteAction(client, "[DENY] Reason: Not enough players. Now: %i, required: %i.", iClients, iMinPlayers);
+		CPrintToChat(issuer, "%t", "not_enough_players", iMinPlayers); // "Not enough players to start the vote. Required minimum: %i"
+		LogVoteAction(issuer, "[DENY] Reason: Not enough players. Now: %i, required: %i.", iClients, iMinPlayers);
 		return false;
 	}
 	
@@ -908,19 +908,19 @@ bool IsVoteAllowed(int client, int target)
 			return false;
 	
 
-		if( GetImmunityLevel(client) < GetImmunityLevel(target) )
+		if( GetImmunityLevel(issuer) < GetImmunityLevel(target) )
 		{
-			CPrintToChat(client, "%t", "no_access_immunity");
-			LogVoteAction(client, "[DENY] Reason: Target immunity (%i) is higher than vote issuer (%i)", GetImmunityLevel(target), GetImmunityLevel(client));
+			CPrintToChat(issuer, "%t", "no_access_immunity");
+			LogVoteAction(issuer, "[DENY] Reason: Target immunity (%i) is higher than vote issuer (%i)", GetImmunityLevel(target), GetImmunityLevel(issuer));
 			return false;
 		}
 	
-		if( IsAdmin(target) && !IsAdmin(client) )
+		if( IsAdmin(target) && !IsAdmin(issuer) )
 			return false;
 
 		if( InDenyFile(target, g_hArrayVoteBlock) )	// allow to vote everybody against clients who located in deny list (regardless of vote access flag)
 		{
-			LogVoteAction(client, "[ALLOW] Reason: target is in deny list.");
+			LogVoteAction(issuer, "[ALLOW] Reason: target is in deny list.");
 			return true;
 		}
 
@@ -928,9 +928,9 @@ bool IsVoteAllowed(int client, int target)
 			return false;
 	}
 		
-	if( InDenyFile(client, g_hArrayVoteBlock) )
+	if( InDenyFile(issuer, g_hArrayVoteBlock) )
 	{
-		LogVoteAction(client, "[DENY] Reason: player is in deny list.");
+		LogVoteAction(issuer, "[DENY] Reason: player is in deny list.");
 		return false;
 	}
 
@@ -1036,8 +1036,18 @@ public void Handle_VoteResults(	Menu menu,	// The menu being voted on.
 			}
 		}
 	}
+	
+	VoteResultsDisplay( yesVotes, noVotes, num_votes, num_clients ) ;
+	g_bVoteNoButtonPressed = false ;
+}
 
-	// Target voted no automatically, if he is not idle (L4D behaviour)
+void VoteResultsDisplay(int yesVotes, int noVotes, int num_votes = 0, int num_clients = 0 )
+{
+	// Issuer votes "Yes" automatically
+	//
+	yesVotes++ ;
+	
+	// Target votes "No" automatically, if he is not idle (L4D behaviour)
 	// If the target userid (g_iKickUserId) is -1, this is the result of a vote to "unkick" a suspended player who doesn't currently have a valid player id. In this case, there is no automatic no vote for that player.
 	if ( g_iKickUserId != -1 && !g_bTargetManualVote ) noVotes++; 
 	
@@ -1056,13 +1066,15 @@ public void Handle_VoteResults(	Menu menu,	// The menu being voted on.
 		Handler_PostVoteAction(false); // vote failed
 
 	g_bVoteInProgress = false;
+
 }
 
-void StartVoteKick(int client, int target)
+void StartVoteKick(int issuer, int target)
 {
 	Menu menu = new Menu(Handle_Votekick, MenuAction_DisplayItem | MenuAction_Display);
 	menu.VoteResultCallback = Handle_VoteResults;
 	g_iKickUserId = GetClientUserId(target);
+	g_iIssuerUserId = GetClientUserId(issuer);
 	menu.AddItem("", "Yes");
 	menu.AddItem("", "No");
 	menu.ExitButton = false;
@@ -1072,7 +1084,7 @@ void StartVoteKick(int client, int target)
 	GetClientIP(target, g_sIP, sizeof(g_sIP));
 	GeoipCode3(g_sIP, g_sCountry);
 	
-	LogVoteAction(client, "[KICK STARTED] by");
+	LogVoteAction(issuer, "[KICK STARTED] by");
 	LogVoteAction(target, "[KICK AGAINST] ");
 	
 	g_bVotepass = false;
@@ -1080,7 +1092,7 @@ void StartVoteKick(int client, int target)
 	g_bVoteDisplayed = false;
 	
 	// Update the global variable before CPrintHintTextToTeam to fix the bug, when the global variable g_iVoteIssuerTeam contained the wrong team id of a previous vote
-	int iTeam = g_iVoteIssuerTeam = GetClientTeam(client); 
+	int iTeam = g_iVoteIssuerTeam = GetClientTeam(issuer); 
 													
 	// If the target is inactive, there is no passive vote in his favor against his expulsion, but the target must actively participate in the vote
 	//	
@@ -1116,7 +1128,7 @@ void StartVoteKick(int client, int target)
 				CPrintToChat(target, "Since you are inactive, you need to vote manually against it"); // Fallback, compatibility with v3.5 phrases.txt
 		}
 
-		CPrintToChatAll("%t \x01(%t %t\x01)", "vote_started", client, g_sName, "Reason", sReasonEng);
+		CPrintToChatAll("%t \x01(%t %t\x01)", "vote_started", issuer, g_sName, "Reason", sReasonEng);
 		CPrintHintTextToTeam( iTeam, "%t\n(%t: %t)", "vote_started_announce", g_sName, "Reason_Menu", sReasonEng);
 	}
 	else
@@ -1133,24 +1145,29 @@ void StartVoteKick(int client, int target)
 				CPrintToChat(target, "Since you are inactive, you need to vote manually against it"); // Fallback, compatibility with v3.5 phrases.txt
 		}
 
-		CPrintToChatAll("%t", "vote_started", client, g_sName); // %N is started vote for kick: %s
+		CPrintToChatAll("%t", "vote_started", issuer, g_sName); // %N is started vote for kick: %s
 		CPrintHintTextToTeam( iTeam, "%t", "vote_started_announce", g_sName);
 	}
 
-	PrintToServer("Vote for kick is started by: %N", client);
-	PrintToConsoleAll("Vote for kick is started by: %N", client);
+	PrintToServer("Vote for kick is started by: %N", issuer);
+	PrintToConsoleAll("Vote for kick is started by: %N", issuer);
 		
 	// Due to the delay of the Timer_VoteDelayed function, g_bVoteInProgress must be set here, as it is possible (and has already happened) that a second vote will begin within g_hCvarAnnounceDelay (before vote starts with menu.DisplayVote), which of course will confuse players
 	g_bVoteInProgress = true;
 	CreateTimer(g_fCvarAnnounceDelay, Timer_VoteDelayed, menu);
 
+	g_bVoteNoButtonPressed = true ;
+	//CreateTimer(g_fCvarAnnounceDelay, TwoSeconds, 3) ;
+//	if ( g_bVoteNoButtonPressed ) VoteResultsDisplay( 0, 0, 0, 3 ) ;
+
 }
 
-void StartVoteUnKick(int client, char[] sSteam)
+void StartVoteUnKick(int issuer, char[] sSteam)
 {
 	Menu menu = new Menu(Handle_Votekick, MenuAction_DisplayItem | MenuAction_Display);
 	menu.VoteResultCallback = Handle_VoteResults;
 	g_iKickUserId = -1;
+	g_iIssuerUserId = GetClientUserId(issuer);
 	menu.AddItem("", "Yes");
 	menu.AddItem("", "No");
 	menu.ExitButton = false;
@@ -1160,17 +1177,17 @@ void StartVoteUnKick(int client, char[] sSteam)
 	g_sIP[0] = 0;
 	g_sCountry[0] = 0;
 	
-	CPrintToChatAll("%t", "vote_started_unkick", client, g_sName); // %N is started vote for un-kick: %s
-	PrintToServer("Vote for un-kick is started by: %N", client);
-	PrintToConsoleAll("Vote for un-kick is started by: %N", client);
+	CPrintToChatAll("%t", "vote_started_unkick", issuer, g_sName); // %N is started vote for un-kick: %s
+	PrintToServer("Vote for un-kick is started by: %N", issuer);
+	PrintToConsoleAll("Vote for un-kick is started by: %N", issuer);
 	
-	LogVoteAction(client, "[UN-KICK STARTED] by");
+	LogVoteAction(issuer, "[UN-KICK STARTED] by");
 	LogVoteAction(0, "[UN-KICK AGAINST] ");
 	
 	g_bVotepass = false;
 	g_bVeto = false;
 	g_bVoteDisplayed = false;
-	int iTeam = g_iVoteIssuerTeam = GetClientTeam(client);
+	int iTeam = g_iVoteIssuerTeam = GetClientTeam(issuer);
 	
 	// Due to the delay of the Timer_VoteDelayed function, g_bVoteInProgress must be set here, as it is possible (and has already happened) that a second vote will begin within g_hCvarAnnounceDelay (before vote starts with menu.DisplayVote), which of course will confuse players
 	g_bVoteInProgress = true;
@@ -1189,15 +1206,20 @@ Action Timer_VoteDelayed(Handle timer, Menu menu)
 		if( !IsVoteInProgress() ) {
 
 			int[] iClients = new int[MaxClients];
-			int iCount = 0; int target = GetClientOfUserId( g_iKickUserId ) ;
+			int num_clients;
+			int iCount = 0;
+			int target = GetClientOfUserId( g_iKickUserId ) ;
+			int issuer = GetClientOfUserId( g_iIssuerUserId );
 			
 			if( g_bIsVersus )
 			{
+				num_clients = GetRealTeamClientCount( GetClientTeam(issuer) ) ;
+				
 				for( int i = 1; i <= MaxClients; i++ )
 				{
 					if( IsClientInGame(i) && GetClientTeam(i) == g_iVoteIssuerTeam )
 					{
-						if ( i != target ) iClients[iCount++] = i;
+						if ( i != target && i != issuer ) iClients[iCount++] = i;
 						else if ( g_bTargetManualVote ) 
 						{
 							iClients[iCount++] = target;
@@ -1206,11 +1228,14 @@ Action Timer_VoteDelayed(Handle timer, Menu menu)
 				}
 			}
 			else {
+				
+				num_clients = GetRealClientCount() ;
+				
 				for( int i = 1; i <= MaxClients; i++ )
 				{
 					if( IsClientInGame(i) )
 					{
-						if ( i != target ) iClients[iCount++] = i;
+						if ( i != target && i != issuer ) iClients[iCount++] = i;
 						else if ( g_bTargetManualVote )
 						{
 							iClients[iCount++] = target;
@@ -1218,8 +1243,11 @@ Action Timer_VoteDelayed(Handle timer, Menu menu)
 					}
 				}
 			}
+			
+			g_iNum_Clients = num_clients;
 			menu.DisplayVote(iClients, iCount, g_iCvarTimeout);
-			g_bVoteDisplayed = true;
+			g_bVoteDisplayed = true ;
+
 		}
 		else {
 			delete menu;
@@ -1227,6 +1255,7 @@ Action Timer_VoteDelayed(Handle timer, Menu menu)
 	}
 	return Plugin_Continue;
 }
+
 
 public int Handle_Votekick(Menu menu, MenuAction action, int player, int param2)
 {
@@ -1238,9 +1267,12 @@ public int Handle_Votekick(Menu menu, MenuAction action, int player, int param2)
 			if( g_bVoteInProgress && g_bVotepass ) { // in case vote is passed with CancelVote(), so MenuAction_VoteEnd is not called.
 				Handler_PostVoteAction(true);
 			}
+
 			g_bVoteInProgress = false;
 			delete menu;
 			
+			if ( g_bVoteNoButtonPressed ) VoteResultsDisplay( 0, 0, (g_bTargetManualVote?1:2), g_iNum_Clients ) ;
+
 			// does currently nothing, just in case
 			/*
 			if ( player == MenuEnd_VotingCancelled )
@@ -1521,6 +1553,7 @@ stock void CPrintHintTextToTeam(int iTeam, const char[] format, any ...)
 	static char buffer[192];
 //	int iBotTargetId = get_bot_of_idled(GetClientOfUserId(g_iKickUserId));
 	int iTarget = GetClientOfUserId(g_iKickUserId);
+	int iIssuer = GetClientOfUserId(g_iIssuerUserId);
 	
 	for( int i = 1; i <= MaxClients; i++ )
     {
@@ -1530,7 +1563,7 @@ stock void CPrintHintTextToTeam(int iTeam, const char[] format, any ...)
 			{
 				if ( GetClientTeam(i) == iTeam )
 				{
-					if ( i != iTarget || g_bTargetManualVote )
+					if ( i != iIssuer &&  ( i != iTarget || g_bTargetManualVote ) )
 					{
 						SetGlobalTransTarget(i);
 						VFormat(buffer, sizeof(buffer), format, 3);
@@ -1538,7 +1571,7 @@ stock void CPrintHintTextToTeam(int iTeam, const char[] format, any ...)
 					}
 				}
 			}
-			else if ( i != iTarget || g_bTargetManualVote )
+			else if ( i != iIssuer &&  ( i != iTarget || g_bTargetManualVote ) )
 			{
 				SetGlobalTransTarget(i);
 				VFormat(buffer, sizeof(buffer), format, 3);
@@ -1767,8 +1800,8 @@ void SaveBanList( bool bDelExpiredBan = false, const char[] sExpiredBanSteamId =
 	WriteFileLine(hFile, "//	[Steam-ID],[Empty]OR[Unix timestamp],[Minutes]OR[d h m]OR[dhm],[Empty]OR[Self note]");
 	WriteFileLine(hFile, "//");
 	WriteFileLine(hFile, "//	Explanation:");
-	WriteFileLine(hFile, "//	Steam-ID,Begin of ban,Duration in minutes OR dhm-String,Self note string");
-	WriteFileLine(hFile, "//	l4d_votekick sets the begin of the ban to a Unix timestamp and adds human readable");
+	WriteFileLine(hFile, "//	Steam-ID,Begin of ban[If empty -> automatically set to the Unix timestamp of the file time],Duration of the ban in minutes OR dhm-String,Self note");
+	WriteFileLine(hFile, "//	l4d_votekick sets the begin of the ban to a Unix timestamp and and automatically adds human readable");
 	WriteFileLine(hFile, "//	information to each entry: ', (Begin YYYY-MM-DD HH:MM:SS <-> End YYYY-MM-DD HH:MM:SS)'");
 	WriteFileLine(hFile, "//");
 	WriteFileLine(hFile, "//	Examples of entries:");
