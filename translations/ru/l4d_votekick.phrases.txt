@@ -1,0 +1,178 @@
+/*
+	Following named colors are supported:
+	 - {white}	(use instead of \x01 )
+	 - {cyan}	(use instead of \x03 )
+	 - {orange}	(use instead of \x04 )
+	 - {green}	(use instead of \x05 )
+*/
+
+"Phrases"
+{
+	"Player To Kick"
+	{
+		"ru"		"Кого кикнуть / снять кик:"
+	}
+	"not_enough_players"
+	{
+		"#format"	"{1:i}"
+		"ru"		"{orange}Слишком мало игроков для голосования. {cyan}Нужно минимум: {1}"
+	}
+	"not_in_game"
+	{
+		"ru"		"{orange}Клиент уже отключился."
+	}
+	"no_access_specific"
+	{
+		"ru"		"{green}%N {orange}пытается голосовать за кик против {green}%s{orange}, но не имеет доступа."
+	}
+	"no_access_specific_unkick"
+	{
+		"ru"		"{green}%N {orange}пытается голосовать за снятие кика с {green}%s{orange}, но не имеет доступа."
+	}
+	"no_access"
+	{
+		"ru"		"Нет доступа."
+	}
+	"no_access_immunity"
+	{
+		"ru"		"Цель имеет более высокий иммунитет."
+	}
+	"other_vote"
+	{
+		"ru"		"{orange}Другое голосование ещё не закончилось!"
+	}
+	"vote_started_announce"
+	{
+		"#format"	"{1:s}"
+		"ru"		"Кикнуть игрока: {1} ?"
+	}
+	"vote_started_announce_unkick"
+	{
+		"#format"	"{1:s}"
+		"ru"		"Снять кик с игрока: {1} ?"
+	}
+	"vote_started"
+	{
+		"ru"		"{green}%N {orange}начал голосование за кик: {cyan}%s\n"
+	}
+	"vote_started_unkick"
+	{
+		"ru"		"{green}%N {orange}начал голосование за снятие кика с: {cyan}%s"
+	}
+	"Yes"
+	{
+		"ru"		"Да"
+	}
+	"No"
+	{
+		"ru"		"Нет"
+	}
+	"too_often"
+	{
+		"ru"		"{orange}Вы не можете голосовать слишком часто!"
+	}
+	"veto"
+	{
+		"ru"		"{green}%N {orange}наложил вето на голосование"
+	}
+	"votepass"
+	{
+		"ru"		"{green}%N {cyan}принудительно продвинул голосование"
+	}
+	"vote_failed"
+	{
+		"ru"		"{cyan}Голосование за кик {orange}провалилось."
+	}
+	"vote_failed_unkick"
+	{
+		"ru"		"{cyan}Голосование за снятие кика {orange}провалилось."
+	}
+	"vote_success"
+	{
+		"#format"	"{1:s}"
+		"ru"		"{green}{1} {orange}был кикнут"
+	}
+	"vote_success_unkick"
+	{
+		"#format"	"{1:s}"
+		"ru"		"{green}{1} {orange}- кик был снят"
+	}
+	"kick_reason"
+	{
+		"ru"		"Вас выгнали из сессии"
+	}
+	"kick_for"
+	{
+		"ru"		"Кикнут за"
+	}
+	"time_left"
+	{
+		"#format"	"{1:i}"
+		"ru"		"({1} мин. осталось)"
+	}
+	"Reason_Menu"
+	{
+		"ru"		"Причина"
+	}
+	"Reason"
+	{
+		"ru"		"{white}Причина:{cyan}"
+	}
+	"Bad language"
+	{
+		"ru"		"Оскорбления / мат"
+	}
+	"Cheater"
+	{
+		"ru"		"Читер"
+	}
+	"Rusher"
+	{
+		"ru"		"Рашер"
+	}
+	"Friendly fire"
+	{
+		"ru"		"Стреляет по своим"
+	}
+	"Griefing"
+	{
+		"ru"		"Руинит игру"
+	}
+	"Microphone"
+	{
+		"ru"		"Микрофон мешает"
+	}
+	"Microphone issues"
+	{
+		"ru"		"Микрофон мешает"
+	}
+	"AFK"
+	{
+		"ru"		"AFK"
+	}	
+	"Other"
+	{
+		"ru"		"Другое"
+	}
+	"Reason not specified"
+	{
+		"ru"		"Причина не указана"
+	}
+	"detailed_vote_results"
+	{
+		"ru"		"Голосование завершено.  ({green}За{white} – {orange}Против{white} – без ответа):  {green}%d{white} – {orange}%d{white} – %d"
+	}
+	"steamid_is_banned"
+	{
+		"ru"		"STEAM UserID %s забанен"
+	}
+	"note_to_target_automatic_vote"
+	{
+		"ru"		"Примечание: Ваш «нет»-голос будет учтен автоматически"
+	}
+	"note_to_target_manual_vote"
+	{
+		"ru"		"Поскольку вы неактивны, вам придется проголосовать вручную."
+	}
+
+}

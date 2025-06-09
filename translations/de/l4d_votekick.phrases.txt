@@ -1,0 +1,178 @@
+/*
+	Following named colors are supported:
+	 - {white}	(use instead of \x01 )
+	 - {cyan}	(use instead of \x03 )
+	 - {orange}	(use instead of \x04 )
+	 - {green}	(use instead of \x05 )
+*/
+
+"Phrases"
+{
+	"Player To Kick"
+	{
+		"de"		"Spieler auswählen, um ihn rauszuwerfen / um seine Sperre aufzuheben:
+	}
+	"not_enough_players"
+	{
+		"#format"	"{1:i}"
+		"de"		"{orange}Zu wenig Spieler für Abstimmung. {cyan}Mindestens erforderlich: {1}:
+	}
+	"not_in_game"
+	{
+		"de"		"{orange}Der Spieler hat das Spiel bereits verlassen."
+	}
+	"no_access_specific"
+	{
+		"de"		"{green}%N {orange}hat versucht, eine Abstimmung gegen {green}%s{orange} zu starten, hat aber keinen Zugriff."
+	}
+	"no_access_specific_unkick"
+	{
+		"de"		"{green}%N {orange}hat versucht, die Sperre von {green}%s{orange} aufzuheben, hat aber keinen Zugriff."
+	}
+	"no_access"
+	{
+		"de"		"Kein Zugriff."
+	}
+	"no_access_immunity"
+	{
+		"de"		"Der Spieler hat einen höheres Schutzlevel."
+	}
+	"other_vote"
+	{
+		"de"		"{orange}Eine andere Abstimmung ist noch nicht zu Ende!"
+	}
+	"vote_started_announce"
+	{
+		"#format"	"{1:s}"
+		"de"		"Möchtest Du {1} rauswerfen ?"
+	}
+	"vote_started_announce_unkick"
+	{
+		"#format"	"{1:s}"
+		"de"		"Möchtest Du die Sperre von {1} aufheben ?"
+	}
+	"vote_started"
+	{
+		"de"		"{green}%N {orange}hat eine Abstimmung gegen {cyan}%s{white} gestartet\n"
+	}
+	"vote_started_unkick"
+	{
+		"de"		"{green}%N {orange}hat eine Abstimmung gestartet, um die Sperre von {cyan}%s{white} aufzuheben"
+	}
+	"Yes"
+	{
+		"de"		"Ja"
+	}
+	"No"
+	{
+		"de"		"Nein"
+	}
+	"too_often"
+	{
+		"de"		"{orange}Bitte warte ein wenig, um erneut abzustimmen."
+	}
+	"veto"
+	{
+		"de"		"{orange}Abstimmung nicht erfolgreich: Veto von {green}%N"
+	}
+	"votepass"
+	{
+		"de"		"{cyan}Abstimmung erfolgreich: Genehmigung von {green}%N"
+	}
+	"vote_failed"
+	{
+		"de"		"{cyan}Die Abstimmung war {orange}nicht erfolgreich."
+	}
+	"vote_failed_unkick"
+	{
+		"de"		"{cyan}Die Sperre wurde {orange}nicht aufgehoben."
+	}
+	"vote_success"
+	{
+		"#format"	"{1:s}"
+		"de"		"{green}{1} {orange}wird rausgeworfen"
+	}
+	"vote_success_unkick"
+	{
+		"#format"	"{1:s}"
+		"de"		"{green}{1} {orange}- Sperre aufgehoben"
+	}
+	"kick_reason"
+	{
+		"de"		"You have been kicked from session"
+	}
+	"kick_for"
+	{
+		"de"		"Rauswurf wegen"
+	}
+	"time_left"
+	{
+		"#format"	"{1:i}"
+		"de"		"({1} min. left)"
+	}
+	"Reason_Menu"
+	{
+		"de"		"Grund"
+	}
+	"Reason"
+	{
+		"de"		"{white}Grund:{cyan}"
+	}
+	"Bad language"
+	{
+		"de"		"Bad language"
+	}
+	"Cheater"
+	{
+		"de"		"Cheater"
+	}
+	"Rusher"
+	{
+		"de"		"Rusher"
+	}
+	"Friendly fire"
+	{
+		"de"		"Friendly fire"
+	}
+	"Griefing"
+	{
+		"de"		"Griefing"
+	}
+	"Microphone"
+	{
+		"de"		"Microphone issues"
+	}
+	"Microphone issues"
+	{
+		"de"		"Microphone issues"
+	}
+	"AFK"
+	{
+		"de"		"AFK"
+	}	
+	"Other"
+	{
+		"de"		"Other"
+	}
+	"Reason not specified"
+	{
+		"de"		"Reason not specified"
+	}
+	"detailed_vote_results"
+	{
+		"de"		"Abstimmung beendet.  ({green}Ja{white} - {orange}Nein{white} - Keine):  {green}%d{white} - {orange}%d{white} - %d"
+	}
+	"steamid_is_banned"
+	{
+		"de"		"STEAM UserID %s is banned"
+	}
+	"note_to_target_automatic_vote"
+	{
+		"de"		"Deine Gegenstimme wird automatisch abgegeben."
+	}
+	"note_to_target_manual_vote"
+	{
+		"de"		"Du bist inaktiv. Deine Gegenstimme wird nicht automatisch abgegeben."
+	}
+
+}
