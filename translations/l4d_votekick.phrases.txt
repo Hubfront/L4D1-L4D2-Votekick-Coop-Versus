@@ -10,236 +10,169 @@
 {
 	"Player To Kick"
 	{
-		"de"		"Spieler auswählen, um ihn rauszuwerfen / um seine Sperre aufzuheben:
 		"en"		"Select player to kick / un-kick:"		
-		"ru"		"Кого кикнуть / снять кик:"
 	}
 	"not_enough_players"
 	{
 		"#format"	"{1:i}"
-		"de"		"{orange}Zu wenig Spieler für Abstimmung. {cyan}Mindestens erforderlich: {1}:
 		"en"		"{orange}Not enough players to start the vote. {cyan}Required minimum: {1}"
-		"ru"		"{orange}Слишком мало игроков для голосования. {cyan}Нужно минимум: {1}"
 	}
 	"not_in_game"
 	{
-		"de"		"{orange}Der Spieler hat das Spiel bereits verlassen."
 		"en"		"{orange}Player is already disconnected."
-		"ru"		"{orange}Клиент уже отключился."
 	}
 	"no_access_specific"
 	{
-		"de"		"{green}%N {orange}hat versucht, eine Abstimmung gegen {green}%s{orange} zu starten, besitzt dafür aber keine Berechtigung."
 		"en"		"{green}%N {orange}tried to start a vote to kick {green}%s{orange}, but doesn't have access."
-		"ru"		"{green}%N {orange}пытается голосовать за кик против {green}%s{orange}, но не имеет доступа."
 	}
 	"no_access_specific_unkick"
 	{
-		"de"		"{green}%N {orange}hat versucht, die Sperre von {green}%s{orange} aufzuheben, besitzt dafür aber keine Berechtigung."
 		"en"		"{green}%N {orange}tried to start a vote to un-kick {green}%s{orange}, but doesn't have access."
-		"ru"		"{green}%N {orange}пытается голосовать за снятие кика с {green}%s{orange}, но не имеет доступа."
 	}
 	"no_access"
 	{
-		"de"		"Keine Berechtigung."
 		"en"		"No access."
-		"ru"		"Нет доступа."
 	}
 	"no_access_immunity"
 	{
-		"de"		"Der Spieler besitzt eine höhere Berechtigung."
 		"en"		"Target has higher immunity."
-		"ru"		"Цель имеет более высокий иммунитет."
 	}
 	"other_vote"
 	{
-		"de"		"{orange}Eine andere Abstimmung läuft noch!"
 		"en"		"{orange}The other vote is not over yet!"
-		"ru"		"{orange}Другое голосование ещё не закончилось!"
 	}
 	"vote_started_announce"
 	{
 		"#format"	"{1:s}"
-		"de"		"Möchtest Du {1} rauswerfen ?"
 		"en"		"Do you want to kick: {1} ?"
-		"ru"		"Кикнуть игрока: {1} ?"
 	}
 	"vote_started_announce_unkick"
 	{
 		"#format"	"{1:s}"
-		"de"		"Möchtest Du die Sperre von {1} aufheben ?"
 		"en"		"Do you want to remove the kick from: {1} ?"
-		"ru"		"Снять кик с игрока: {1} ?"
 	}
 	"vote_started"
 	{
-		"de"		"{green}%N {orange}hat eine Abstimmung gegen {cyan}%s{white} gestartet\n"
 		"en"		"{green}%N {orange}started a vote to kick {cyan}%s\n"
-		"ru"		"{green}%N {orange}начал голосование за кик: {cyan}%s\n"
 	}
 	"vote_started_unkick"
 	{
-		"de"		"{green}%N {orange}hat eine Abstimmung gestartet, um die Sperre von {cyan}%s{white} aufzuheben"
 		"en"		"{green}%N {orange}started a vote to un-kick: {cyan}%s"
-		"ru"		"{green}%N {orange}начал голосование за снятие кика с: {cyan}%s"
 	}
 	"Yes"
 	{
-		"de"		"Ja"
 		"en"		"Yes"
-		"ru"		"Да"
 	}
 	"No"
 	{
-		"de"		"Nein"
 		"en"		"No"
-		"ru"		"Нет"
 	}
 	"too_often"
 	{
-		"de"		"{orange}Warte ein wenig, bevor Du abstimmsen kannst."
 		"en"		"{orange}You can't vote too often!"
-		"ru"		"{orange}Вы не можете голосовать слишком часто!"
 	}
 	"veto"
 	{
-		"de"		"{orange}Abstimmung nicht erfolgreich: Veto von {green}%N"
 		"en"		"{orange}Current vote is vetoed by {green}%N"
-		"ru"		"{green}%N {orange}наложил вето на голосование"
 	}
 	"votepass"
 	{
-		"de"		"{cyan}Abstimmung erfolgreich: Genehmigung von {green}%N"
 		"en"		"{cyan}Current vote is passed by {green}%N"
-		"ru"		"{green}%N {cyan}принудительно продвинул голосование"
 	}
 	"vote_failed"
 	{
-		"de"		"{cyan}Abstimmung zu Rauswurf nicht erfolgreich."
 		"en"		"{cyan}The kick vote {orange}failed."
-		"ru"		"{cyan}Голосование за кик {orange}провалилось."
 	}
 	"vote_failed_unkick"
 	{
-		"de"		"{cyan}Die Sperre wurde {orange}nicht aufgehoben."
 		"en"		"{cyan}The vote to remove the ban {orange}failed."
-		"ru"		"{cyan}Голосование за снятие кика {orange}провалилось."
 	}
 	"vote_success"
 	{
 		"#format"	"{1:s}"
-		"de"		"{green}{1} {orange}wurde rausgeworfen"
 		"en"		"{green}{1} {orange}is kicked"
-		"ru"		"{green}{1} {orange}был кикнут"
 	}
 	"vote_success_unkick"
 	{
 		"#format"	"{1:s}"
-		"en"		"{green}{1} {orange}- Sperre aufgehoben"
 		"en"		"{green}{1} {orange}- ban is removed"
-		"ru"		"{green}{1} {orange}- кик был снят"
 	}
 	"kick_reason"
 	{
 		"en"		"You have been kicked from session"
-		"ru"		"Вас выгнали из сессии"
 	}
 	"kick_for"
 	{
-		"de"		"Rauswurf wegen"
 		"en"		"Kicked for"
-		"ru"		"Кикнут за"
 	}
 	"time_left"
 	{
 		"#format"	"{1:i}"
 		"en"		"({1} min. left)"
-		"ru"		"({1} мин. осталось)"
 	}
 	"Reason_Menu"
 	{
-		"de"		"Grund"
 		"en"		"Reason"
-		"ru"		"Причина"
 	}
 	"Reason"
 	{
-		"de"		"{white}Grund:{cyan}"
 		"en"		"{white}Reason:{cyan}"
-		"ru"		"{white}Причина:{cyan}"
 	}
 	"Bad language"
 	{
 		"en"		"Bad language"
-		"ru"		"Оскорбления / мат"
 	}
 	"Cheater"
 	{
 		"en"		"Cheater"
-		"ru"		"Читер"
 	}
 	"Rusher"
 	{
 		"en"		"Rusher"
-		"ru"		"Рашер"
 	}
 	"Friendly fire"
 	{
 		"en"		"Friendly fire"
-		"ru"		"Стреляет по своим"
 	}
 	"Griefing"
 	{
 		"en"		"Griefing"
-		"ru"		"Руинит игру"
 	}
 	"Microphone"
 	{
 		"en"		"Microphone issues"
-		"ru"		"Микрофон мешает"
 	}
 	"Microphone issues"
 	{
 		"en"		"Microphone issues"
-		"ru"		"Микрофон мешает"
 	}
 	"AFK"
 	{
 		"en"		"AFK"
-		"ru"		"AFK"
 	}	
 	"Other"
 	{
 		"en"		"Other"
-		"ru"		"Другое"
 	}
 	"Reason not specified"
 	{
 		"en"		"Reason not specified"
-		"ru"		"Причина не указана"
 	}
 	"detailed_vote_results"
 	{
-		"de"		"Abstimmung beendet.  ({green}Ja{white} - {orange}Nein{white} - Keine):  {green}%d{white} - {orange}%d{white} - %d"
 		"en"		"Vote ended.  ({green}Yes{white} - {orange}No{white} - Unanswered):  {green}%d{white} - {orange}%d{white} - %d"
-		"ru"		"Голосование завершено.  ({green}За{white} – {orange}Против{white} – без ответа):  {green}%d{white} – {orange}%d{white} – %d"
 	}
 	"steamid_is_banned"
 	{
 		"en"		"STEAM UserID %s is banned"
-		"ru"		"STEAM UserID %s забанен"
 	}
 	"note_to_target_automatic_vote"
 	{
-		"de"		"Beachte: Deine Gegenstimme wird automatisch abgegeben"
 		"en"		"Note: Your vote against will be cast automatically"
-		"ru"		"Примечание: Ваш «нет»-голос будет учтен автоматически"
 	}
 	"note_to_target_manual_vote"
 	{
-		"de"		"Du bist inaktiv, Deine Gegenstimme musst Du daher selbst abgeben"
 		"en"		"Since you are inactive, you need to vote manually against it"
-		"ru"		"Поскольку вы неактивны, вам придется проголосовать вручную."
 	}
 
 }
