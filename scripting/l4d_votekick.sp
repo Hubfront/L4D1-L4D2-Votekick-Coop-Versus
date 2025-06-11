@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "4.4"
+#define PLUGIN_VERSION "4.5"
 
 #pragma newdecls required
 #pragma semicolon 1
@@ -16,7 +16,7 @@ public Plugin myinfo =
 	author = "alliedfront",
 	description = "Vote to kick a player, with translucent menu",
 	version = PLUGIN_VERSION,
-	url = "https://github.com/hubfront"
+	url = "https://github.com/Hubfront/L4D1-L4D2-Votekick-Coop-Versus"
 };
 
 /*
@@ -25,9 +25,13 @@ public Plugin myinfo =
 	 
 	Features:
 
+	 - full support for both game modes: Co-op and Versus (L4D1 % L4D2)
+	 - prevents a serious votekick exploit in the official L4D1 kickvote: a kick through a successful vote has no effect if the kicked player leaves the game shortly before the end. Some players exploit this to disrupt the game of other players.
+	 - the kick vote is now kept as short as possible (Version 4.5): the vote of the initiator of the vote and the vote against a player who is the target of the kick vote and who is not inactive are automatically cast (similar to the official L4D behavior).
+	 - ability to exclude a list of users you may not want to connect for a given time period. Excluded users receive the message "STEAM UserID is banned."
+	 * See the file: data/votekick_ban.txt (if not present, create it by setting cvar sm_votekick_use_banfile set to "1" in cfg-file)
 	 - translucent menu
 	 - kick for 1 hour (adjustable) even if the player used a trick to quit from the game before the vote ends.
-	 - prevents votekick exploit
 	 - un-kick (from the same menu)
 	 - vote announcement
 	 - no black screen
@@ -37,9 +41,6 @@ public Plugin myinfo =
 	 - all actions are logged (who kick, whom kick, who tried to kick, ip/country/nick/SteamId, reason ...)
 	 - ability to black list specific users (by SteamId or nickname) to prevent them from starting the vote:
 	 * See the file: data/votekick_vote_block.txt
-	 - ability to exclude a list of users you may not want to connect for a given time period. Excluded users receive the message "STEAM UserID is banned."
-	 * See the file: data/votekick_ban.txt (if not present, create it by setting cvar sm_votekick_use_banfile set to "1" in cfg-file)
-	 - the voting kick for the team is as short as possible: in Coop and in Versus the counter vote for an active player is cast automatically (similar to official L4D behaviour)
 	
 	Logfile location:
 	 - logs/vote_kick.log
@@ -77,7 +78,7 @@ public Plugin myinfo =
 	 
 	Installation:
 	 - copy smx file to addons/sourcemod/plugins/
-	 - copy translations/l4d_votekick.phrases.txt file to addons/sourcemod/translations/
+	 - copy files and folders in translations/ to addons/sourcemod/translations/
 	 - copy data/ .txt files to addons/sourcemod/data/
 	 - banfile: to enable, set sm_votekick_use_banfile = 1 in the cfg file. 
 	 * file data/votekick_ban.txt will be created with next map start/change, if it not already exists.
@@ -137,7 +138,7 @@ public Plugin myinfo =
 	 - Fixed a bug where in some cases a game server restart was required to create data/votekick_ban.txt
 	 - Updated description
 
-	4.4 (17-May-2025)
+	4.4 (18-May-2025)
 	 - Improvement: Faster kick vote: in Coop and in Versus the counter vote for an active player is cast automatically 
 	   After a period of inactivity, he can only vote manually (Coop: depends on server config, Versus: CVAR sm_votekick_versus_inactive_time (Default: 45 sec)
 	   This behavior is similar to the official L4D kick behavior during voting in both L4D game modes
@@ -146,10 +147,23 @@ public Plugin myinfo =
 	   * sm_votekick_versus_inactive_time (Default: 45 sec)
 	 Bugfixes:
 	 - Fixed a bug where kickvoting wouldn't work in Coop mode if the player was inactive.
-	 - Code optimizations
 	 Minor changes:
+	 - Code optimizations
 	 - Cosmetic changes (banfile description)
 	 - Updated phrases.txt
+	 - Updated description
+
+	4.5 (xx-June-2025)
+	 - Improvement: Now the initiator of the kickvote does cast his vote automatically.
+	 - Improvement: If there are only two players on the team, the kick vote immediately ends in a tie unless the target is inactive.
+     - Improvement: If a dead player is the target of a kick vote, he always automatically votes against it.
+	 - Added German translation
+	 - Added Spanish translation
+	 - The four translation languages ​​are now organized according to the official recommendation, see also https://wiki.alliedmods.net/Translations_(SourceMod_Scripting)
+	 Bugfixes:
+	 - Fixed a bug where no result was displayed for a kick vote if no player pressed a button to vote.
+	 Minor changes:
+	 - Code optimizations
 	 - Updated description
 	 
 	Please note: for completeness, the following changelog has been copied from Dragokas' plugin "[L4D] Votekick (no black screen)", version 3.5.

@@ -8,10 +8,15 @@ Description:
 
 Features:
 
+    - full support for both game modes: Co-op and Versus (L4D1 % L4D2)
+    - prevents a serious votekick exploit in the official L4D1 kickvote: a kick through a successful vote has no effect if the kicked player leaves the game shortly before the end. Some players exploit this to disrupt the game of other players.
+    - the kick vote is now kept as short as possible (Version 4.5): the vote of the initiator of the vote and the vote against a player who is the target of the kick vote and who is not inactive are automatically cast (similar to the official L4D behavior).
+    - ability to exclude a list of users you may not want to connect for a given time period. Excluded users receive the message "STEAM UserID is banned."
+	 
+        * See the file: data/votekick_ban.txt (if not present, create it by setting cvar sm_votekick_use_banfile set to "1" in cfg-file)
+		
     - translucent menu
-    - full versus support
     - kick for 1 hour (adjustable) even if the player used a trick to quit from the game before the vote ends.
-    - prevents votekick exploit
     - un-kick (from the same menu)
     - vote announcement
     - no black screen
@@ -26,12 +31,6 @@ Features:
         * See the file: data/votekick_vote_block.txt
 
     - auto-add to deny list the users from the "newnames.txt" file in Auto-Name-Changer by Exle plugin.
-    - ability to exclude a list of users you may not want to connect for a given time period. Excluded users receive the message "STEAM UserID is banned."
-	 
-        * See the file: data/votekick_ban.txt (if not present, create it by setting cvar sm_votekick_use_banfile set to "1" in cfg-file)
-    
-    - the voting kick for the team is as short as possible: in Coop and in Versus the counter vote for an active player is cast automatically (similar to official L4D behaviour)
-
 
 Logfile location:
 
@@ -103,12 +102,14 @@ Requirements:
 Languages:
 
     - English
+	- German
+	- Spanish
     - Russian
 
 Installation:
 
     - copy smx file to addons/sourcemod/plugins/
-    - copy l4d_votekick.phrases.txt file to addons/sourcemod/translations/
+    - copy files and folders in translations/ to addons/sourcemod/translations/
     - copy data/ .txt files to addons/sourcemod/data/
     - banfile:
       to enable, set sm_votekick_use_banfile = 1 in the cfg file. 	  
@@ -125,3 +126,4 @@ Credits:
 References:
     
     - [L4D1 & L4D2] Votekick (Coop & Versus): https://forums.alliedmods.net/showthread.php?t=349341
+	- Github: https://github.com/Hubfront/L4D1-L4D2-Votekick-Coop-Versus
