@@ -153,7 +153,7 @@ public Plugin myinfo =
 	 - Updated phrases.txt
 	 - Updated description
 
-	4.5 (xx-June-2025)
+	4.5 (12-June-2025)
 	 - Improvement: Now the initiator of the kickvote does cast his vote automatically.
 	 - Improvement: If there are only two players on the team, the kick vote immediately ends in a tie unless the target is inactive.
      - Improvement: If a dead player is the target of a kick vote, he always automatically votes against it.
