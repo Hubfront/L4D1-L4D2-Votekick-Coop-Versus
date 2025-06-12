@@ -9,9 +9,8 @@ Description:
 Features:
 
     - full support for both game modes: Co-op and Versus (L4D1 % L4D2)
-    - prevents a serious votekick exploit in the official L4D1 kickvote: a kick through a successful vote has no effect if the kicked player leaves the game shortly before the end. Some players exploit this to disrupt the game of other players.
-    - the kick vote is now kept as short as possible (Version 4.5): the vote of the initiator of the vote and the vote against a player who is the target of the kick vote and who is not inactive are automatically cast (similar to the official L4D behavior).
-    - ability to exclude a list of users you may not want to connect for a given time period. Excluded users receive the message "STEAM UserID is banned."
+    - prevents a serious vote kick exploit in the official L4D1 kick vote: A kick from a successful vote has no effect if the kicked player leaves the game shortly before the vote ends. Some players exploit this to disrupt other players' gameplay.
+    - the kick vote is now kept as short as possible (version 4.5): the vote of the initiator of the vote and the vote of the player to be kicked who is not inactive are cast automatically (similar to the official L4D behavior).
 	 
         * See the file: data/votekick_ban.txt (if not present, create it by setting cvar sm_votekick_use_banfile set to "1" in cfg-file)
 		
