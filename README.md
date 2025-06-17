@@ -125,5 +125,5 @@ Credits:
   
 References:
     
-    - [L4D1 & L4D2] Votekick (Coop & Versus): https://forums.alliedmods.net/showthread.php?t=349341
+    - [L4D1 & L4D2] Votekick (Co-op & Versus): https://forums.alliedmods.net/showthread.php?t=349341
 	- Github: https://github.com/Hubfront/L4D1-L4D2-Votekick-Coop-Versus
