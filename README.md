@@ -8,7 +8,7 @@ Description:
 
 Features:
 
-    - full support for both game modes: Co-op and Versus (L4D1 % L4D2)
+    - full support for both game modes: Co-op and Versus (L4D1 & L4D2)
     - prevents a serious vote kick exploit in the official L4D1 kick vote: A kick from a successful vote has no effect if the kicked player leaves the game shortly before the vote ends. Some players exploit this to disrupt other players' gameplay.
     - the kick vote is now kept as short as possible (version 4.5): the vote of the initiator of the vote and the vote of the player to be kicked who is not inactive are cast automatically (similar to the official L4D behavior).
     - simple temporary bans: ability to exclude a list of users you may not want to connect for a given time period. Excluded users receive the message "STEAM UserID is banned."
