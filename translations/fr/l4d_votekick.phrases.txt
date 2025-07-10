@@ -1,0 +1,178 @@
+/*
+	Following named colors are supported:
+	 - {white}	(use instead of \x01 )
+	 - {cyan}	(use instead of \x03 )
+	 - {orange}	(use instead of \x04 )
+	 - {green}	(use instead of \x05 )
+*/
+
+"Phrases"
+{
+	"Player To Kick"
+	{
+		"fr"		"Sélectionnez le joueur à expulser / désexpulser:"		
+	}
+	"not_enough_players"
+	{
+		"#format"	"{1:i}"
+		"fr"		"{orange}Pas assez de joueurs pour lancer le vote. {cyan}Minimum requis : {1}"
+	}
+	"not_in_game"
+	{
+		"fr"		"{orange}Le joueur est déjà déconnecté."
+	}
+	"no_access_specific"
+	{
+		"fr"		"{green}%N {orange}a essayé de lancer un vote pour expulser {green}%s{orange}, mais n'y a pas accès."
+	}
+	"no_access_specific_unkick"
+	{
+		"fr"		"{green}%N {orange}a essayé de lancer un vote pour annuler l'expulsion de {green}%s{orange}, mais n'y a pas accès."
+	}
+	"no_access"
+	{
+		"fr"		"Pas d'accès."
+	}
+	"no_access_immunity"
+	{
+		"fr"		"La cible a une immunité plus élevée."
+	}
+	"other_vote"
+	{
+		"fr"		"{orange}Un autre vote n'est pas encore terminé !"
+	}
+	"vote_started_announce"
+	{
+		"#format"	"{1:s}"
+		"fr"		"Voulez-vous expulser {1} ?"
+	}
+	"vote_started_announce_unkick"
+	{
+		"#format"	"{1:s}"
+		"fr"		"Voulez-vous débanir {1} ?"
+	}
+	"vote_started"
+	{
+		"fr"		"{green}%N {orange}lancer un vote pour expulser {cayenne}%s\n"
+	}
+	"vote_started_unkick"
+	{
+		"fr"		"{green}%N {orange}a lancé un vote pour annuler l'expulsion de : {cyan}%s"
+	}
+	"Yes"
+	{
+		"fr"		"Oui"
+	}
+	"No"
+	{
+		"fr"		"Non"
+	}
+	"too_often"
+	{
+		"fr"		"{orange}Vous devez attendre avant de voter à nouveau."
+	}
+	"veto"
+	{
+		"fr"		"{orange}Le vote actuel est rejeté par {green}%N"
+	}
+	"votepass"
+	{
+		"fr"		"{cyan}Le vote actuel d'expulsion est approuvé par {green}%N"
+	}
+	"vote_failed"
+	{
+		"fr"		"{cyan}Le vote {orange} n’a pas abouti."
+	}
+	"vote_failed_unkick"
+	{
+		"fr"		"{cyan}Le vote pour annuler l'expulsion {orange} a échoué."
+	}
+	"vote_success"
+	{
+		"#format"	"{1:s}"
+		"fr"		"{green}{1} {orange}est expulsé."
+	}
+	"vote_success_unkick"
+	{
+		"#format"	"{1:s}"
+		"fr"		"{green}{1} {orange}- le verrou est levé."
+	}
+	"kick_reason"
+	{
+		"fr"		"Vous avez été exclu du tour de jeu"
+	}
+	"kick_for"
+	{
+		"fr"		"Expulsé à cause de"
+	}
+	"time_left"
+	{
+		"#format"	"{1:i}"
+		"fr"		"({1} min. left)"
+	}
+	"Reason_Menu"
+	{
+		"fr"		"Raison"
+	}
+	"Reason"
+	{
+		"fr"		"{white}Raison:{cyan}"
+	}
+	"Bad language"
+	{
+		"fr"		"gros mots"
+	}
+	"Cheater"
+	{
+		"fr"		"Tricheuse"
+	}
+	"Rusher"
+	{
+		"fr"		"Rusheur"
+	}
+	"Friendly fire"
+	{
+		"fr"		"Tir ami"
+	}
+	"Griefing"
+	{
+		"fr"		"trouble-fête"
+	}
+	"Microphone"
+	{
+		"fr"		"Problèmes de micro"
+	}
+	"Microphone issues"
+	{
+		"fr"		"Problèmes de micro"
+	}
+	"AFK"
+	{
+		"fr"		"AFK"
+	}	
+	"Other"
+	{
+		"fr"		"Autres raisons"
+	}
+	"Reason not specified"
+	{
+		"fr"		"Raison non précisée"
+	}
+	"detailed_vote_results"
+	{
+		"fr"		"Vote terminé. ({green}Oui{white} - {orange}Non{white} - Sans réponse) : {green}%d{white} - {orange}%d{white} - %d"
+	}
+	"steamid_is_banned"
+	{
+		"fr"		"STEAM UserID %s is banned"
+	}
+	"note_to_target_automatic_vote"
+	{
+		"fr"		"Remarque : votre vote contre sera automatiquement exprimé"
+	}
+	"note_to_target_manual_vote"
+	{
+		"fr"		"Puisque vous êtes inactif, vous devez voter manuellement contre."
+	}
+
+}
