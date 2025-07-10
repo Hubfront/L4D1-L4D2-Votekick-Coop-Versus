@@ -69,7 +69,7 @@
 	}
 	"too_often"
 	{
-		"de"		"{orange}Bitte warte ein wenig, um erneut abzustimmen."
+		"de"		"{orange}Warte etwaa, um erneut abzustimmen."
 	}
 	"veto"
 	{
@@ -120,7 +120,7 @@
 	}
 	"Bad language"
 	{
-		"de"		"Bad language"
+		"de"		"Schlechtes Benehmen"
 	}
 	"Cheater"
 	{
@@ -140,11 +140,11 @@
 	}
 	"Microphone"
 	{
-		"de"		"Microphone issues"
+		"de"		"Mikrofonprobleme"
 	}
 	"Microphone issues"
 	{
-		"de"		"Microphone issues"
+		"de"		"Microfonprobleme"
 	}
 	"AFK"
 	{
@@ -152,11 +152,11 @@
 	}	
 	"Other"
 	{
-		"de"		"Other"
+		"de"		"Anderer Grund"
 	}
 	"Reason not specified"
 	{
-		"de"		"Reason not specified"
+		"de"		"Kein Grund angegeben"
 	}
 	"detailed_vote_results"
 	{
