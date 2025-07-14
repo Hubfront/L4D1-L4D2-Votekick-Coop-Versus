@@ -102,6 +102,7 @@ Requirements:
 Languages:
 
     - English
+	- French
 	- German
 	- Spanish
     - Russian
