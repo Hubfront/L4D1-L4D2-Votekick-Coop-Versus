@@ -116,11 +116,11 @@
 	}
 	"Reason"
 	{
-		"es"		"{white}Reason:{cyan}"
+		"es"		"{white}Razón:{cyan}"
 	}
 	"Bad language"
 	{
-		"es"		"Bad language"
+		"es"		"comportamiento inaceptable"
 	}
 	"Cheater"
 	{
@@ -140,11 +140,11 @@
 	}
 	"Microphone"
 	{
-		"es"		"Microphone issues"
+		"es"		"Problemas con el micrófono"
 	}
 	"Microphone issues"
 	{
-		"es"		"Microphone issues"
+		"es"		"Problemas con el micrófono"
 	}
 	"AFK"
 	{
@@ -152,11 +152,11 @@
 	}	
 	"Other"
 	{
-		"es"		"Other"
+		"es"		"Otra razón"
 	}
 	"Reason not specified"
 	{
-		"es"		"Reason not specified"
+		"es"		"Razón no dada"
 	}
 	"detailed_vote_results"
 	{
