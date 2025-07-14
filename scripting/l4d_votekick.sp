@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "4.5"
+#define PLUGIN_VERSION "4.6"
 
 #pragma newdecls required
 #pragma semicolon 1
@@ -165,6 +165,12 @@ public Plugin myinfo =
 	 Minor changes:
 	 - Code optimizations
 	 - Updated description
+
+	4.6 (14-July-2025)
+	 - Added French translation
+	 Bugfixes:
+	 - Fixed a bug where in case of a vote pass or veto, the corresponding message was sent to players twice and logged twice.
+
 	 
 	Please note: for completeness, the following changelog has been copied from Dragokas' plugin "[L4D] Votekick (no black screen)", version 3.5.
 
