@@ -1303,19 +1303,26 @@ public int Handle_Votekick(Menu menu, MenuAction action, int player, int param2)
 
 	switch( action )
 	{
-		case MenuAction_End: {
-			if( g_bVoteInProgress && g_bVotepass ) { // in case vote is passed with CancelVote(), so MenuAction_VoteEnd is not called.
-				Handler_PostVoteAction(true);
-			}
-
+		case MenuAction_End: 
+		{
 			g_bVoteInProgress = false;
 			delete menu;
-			
-			// Initiator automatically votes against target
-			// Target votes automatically unless it is AFK
-			// Even if no one presses a button, there is at least one vote
-			if ( g_bVoteNoButtonPressed ) VoteResultsDisplay( 0, 0, (g_bTargetManualVote?1:2), g_iNum_Clients ) ;
 
+			// in case vote is passed with CancelVote(), so MenuAction_VoteEnd is not called.
+			//
+			if ( g_bVoteInProgress && g_bVotepass ) 
+			{ 
+				Handler_PostVoteAction(true);
+			}
+			else if ( g_bVoteNoButtonPressed )
+			{
+				// Initiator automatically votes against target
+				// Target votes automatically unless it is AFK
+				// Even if no one presses a button, there is at least one vote
+				//
+				VoteResultsDisplay( 0, 0, (g_bTargetManualVote?1:2), g_iNum_Clients ) ;
+			}
+			
 			// does currently nothing, just in case
 			/*
 			if ( player == MenuEnd_VotingCancelled )
