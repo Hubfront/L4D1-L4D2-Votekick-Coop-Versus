@@ -39,7 +39,7 @@
 	}
 	"other_vote"
 	{
-		"en"		"{orange}The other vote is not over yet!"
+		"en"		"{orange}Anther vote is not over yet!"
 	}
 	"vote_started_announce"
 	{
@@ -54,6 +54,14 @@
 	"vote_started"
 	{
 		"en"		"{green}%N {orange}started a vote to kick {cyan}%s\n"
+	}
+	"vote_started_anonymous_initiator"
+	{
+		"en"		"A vote to kick {cyan}%s{white} has been started.\n"
+	}
+	"vote_started_msg_to_otherteam"
+	{
+		"en"		"The other team started a kickvote.\n"
 	}
 	"vote_started_unkick"
 	{
@@ -83,6 +91,10 @@
 	{
 		"en"		"{cyan}The kick vote {orange}failed."
 	}
+	"vote_failed_otherteam"
+	{
+		"en"		"A kick vote by the other team failed."
+	}
 	"vote_failed_unkick"
 	{
 		"en"		"{cyan}The vote to remove the ban {orange}failed."
@@ -90,7 +102,12 @@
 	"vote_success"
 	{
 		"#format"	"{1:s}"
-		"en"		"{green}{1} {orange}is kicked"
+		"en"		"{green}{1} {orange}is kicked out"
+	}
+	"vote_success_otherteam"
+	{
+		"#format"	"{1:s}"
+		"en"		"{1} is kicked out by vote"
 	}
 	"vote_success_unkick"
 	{
@@ -168,11 +185,18 @@
 	}
 	"note_to_target_automatic_vote"
 	{
-		"en"		"Note: Your vote against will be cast automatically"
+		"en"		"Note: Your vote against will be cast {green]automatically"
 	}
 	"note_to_target_manual_vote"
 	{
-		"en"		"Since you are inactive, you need to vote manually against it"
+		"en"		"Since you are inactive, you need to vote {orange}manually{white} against it"
 	}
-
+	"survivor"
+	{
+		"en"		"Survivor"
+	}
+	"infected"
+	{
+		"en"		"Infected"
+	}
 }

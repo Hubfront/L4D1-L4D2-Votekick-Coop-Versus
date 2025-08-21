@@ -55,6 +55,14 @@
 	{
 		"ru"		"{green}%N {orange}начал голосование за кик: {cyan}%s\n"
 	}
+	"vote_started_anonymous_initiator"
+	{
+		"ru"		"Началось голосование за исключение {cyan}%s{white}\n"
+	}
+	"vote_started_msg_to_otherteam"
+	{
+		"ru"		"Другая команда начала голосование за их выселение.\n"
+	}
 	"vote_started_unkick"
 	{
 		"ru"		"{green}%N {orange}начал голосование за снятие кика с: {cyan}%s"
@@ -174,5 +182,12 @@
 	{
 		"ru"		"Поскольку вы неактивны, вам придется проголосовать вручную."
 	}
-
+	"survivor"
+	{
+		"ru"		"Survivor"
+	}
+	"infected"
+	{
+		"ru"		"Infected"
+	}
 }

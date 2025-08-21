@@ -55,6 +55,14 @@
 	{
 		"fr"		"{green}%N {orange}lancer un vote pour expulser {cayenne}%s\n"
 	}
+	"vote_started_anonymous_initiator"
+	{
+		"fr"		"Un vote pour expulser {cyan}%s{white} a été lancé\n"
+	}
+	"vote_started_msg_to_otherteam"
+	{
+		"fr"		"L'autre équipe a lancé un kickvote.\n"
+	}
 	"vote_started_unkick"
 	{
 		"fr"		"{green}%N {orange}a lancé un vote pour annuler l'expulsion de : {cyan}%s"
@@ -90,7 +98,7 @@
 	"vote_success"
 	{
 		"#format"	"{1:s}"
-		"fr"		"{green}{1} {orange}est expulsé."
+		"fr"		"vert}{1}{orange}est expulsé"
 	}
 	"vote_success_unkick"
 	{
@@ -174,5 +182,12 @@
 	{
 		"fr"		"Puisque vous êtes inactif, vous devez voter manuellement contre."
 	}
-
+	"survivor"
+	{
+		"fr"		"Survivor"
+	}
+	"infected"
+	{
+		"fr"		"Infected"
+	}
 }

@@ -35,7 +35,7 @@
 	}
 	"no_access_immunity"
 	{
-		"de"		"Der Spieler hat einen höheres Schutzlevel."
+		"de"		"Der Spieler besitzt einen höheren Schutzlevel."
 	}
 	"other_vote"
 	{
@@ -55,6 +55,14 @@
 	{
 		"de"		"{green}%N {orange}hat eine Abstimmung gegen {cyan}%s{white} gestartet\n"
 	}
+	"vote_started_anonymous_initiator"
+	{
+		"de"		"Eine Abstimmung zum Rauswurf von {cyan}%s{white} wurde gestartet\n"
+	}
+	"vote_started_otherteam"
+	{
+		"de"		"Das andere Team hat eine Kickvote gestartet.\n"
+	}
 	"vote_started_unkick"
 	{
 		"de"		"{green}%N {orange}hat eine Abstimmung gestartet, um die Sperre von {cyan}%s{white} aufzuheben"
@@ -69,7 +77,7 @@
 	}
 	"too_often"
 	{
-		"de"		"{orange}Warte etwaa, um erneut abzustimmen."
+		"de"		"{orange}Warte etwas, um erneut abzustimmen."
 	}
 	"veto"
 	{
@@ -83,6 +91,10 @@
 	{
 		"de"		"{cyan}Die Abstimmung war {orange}nicht erfolgreich."
 	}
+	"vote_failed_otherteam"
+	{
+		"de"		"Eine Kickvote des anderen Teams war nicht erfolgreich."
+	}
 	"vote_failed_unkick"
 	{
 		"de"		"{cyan}Die Sperre wurde {orange}nicht aufgehoben."
@@ -91,6 +103,11 @@
 	{
 		"#format"	"{1:s}"
 		"de"		"{green}{1} {orange}wird rausgeworfen"
+	}
+	"vote_success_otherteam"
+	{
+		"#format"	"{1:s}"
+		"de"		"{1} wird nach Abstimmung rausgeworfen"
 	}
 	"vote_success_unkick"
 	{
@@ -174,5 +191,12 @@
 	{
 		"de"		"Du bist inaktiv. Deine Gegenstimme wird nicht automatisch abgegeben."
 	}
-
+	"survivor"
+	{
+		"de"		"Survivor"
+	}
+	"infected"
+	{
+		"de"		"Infected"
+	}
 }

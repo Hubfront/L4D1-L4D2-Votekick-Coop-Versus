@@ -55,6 +55,18 @@
 	{
 		"es"		"{green}%N {orange}ha iniciado una votación contra {cyan}%s{white}\n"
 	}
+	"vote_started_anonymous_initiator"
+	{
+		"es"		"Se ha iniciado una votación para expulsar a {cyan}%s{white}\n"
+	}
+	"vote_started_msg_to_otherteam"
+	{
+		"es"		"El otro equipo inició una votación.\n"
+	}
+	"vote_started_anonymous"
+	{
+		"es"		"El equipo %s ha iniciado una votación para expulsar a un jugador.\n"
+	}
 	"vote_started_unkick"
 	{
 		"es"		"{green}%N {orange}ha iniciado una votación para desbanear a {cyan}%s{white}"
@@ -90,7 +102,7 @@
 	"vote_success"
 	{
 		"#format"	"{1:s}"
-		"es"		"{green}{1} {orange}es expulsado"
+		"es"		"{green}{1} {orange} fue expulsado"
 	}
 	"vote_success_unkick"
 	{
@@ -174,5 +186,12 @@
 	{
 		"es"		"Dado que estás inactivo, debes votar manualmente en contra."
 	}
-
+	"survivor"
+	{
+		"es"		"Survivor"
+	}
+	"infected"
+	{
+		"es"		"Infected"
+	}
 }
