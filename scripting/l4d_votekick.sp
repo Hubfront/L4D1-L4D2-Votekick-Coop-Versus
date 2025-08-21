@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "4.6"
+#define PLUGIN_VERSION "4.7"
 
 #pragma newdecls required
 #pragma semicolon 1
@@ -73,12 +73,18 @@ public Plugin myinfo =
 	 - GeoIP extension (included in SourceMod).
 	
 	Languages:
+	 - Chinese
 	 - English
+	 - French
+	 - German
 	 - Russian
+	 - Spanish
+	 - Ukrainian
 	 
 	Installation:
 	 - copy smx file to addons/sourcemod/plugins/
 	 - copy files and folders in translations/ to addons/sourcemod/translations/
+	 - Note: only addons/sourcemod/translations/l4d_votekick.phrases.txt is mandatory, other language files are optional.
 	 - copy data/ .txt files to addons/sourcemod/data/
 	 - banfile: to enable, set sm_votekick_use_banfile = 1 in the cfg file. 
 	 * file data/votekick_ban.txt will be created with next map start/change, if it not already exists.
@@ -171,6 +177,24 @@ public Plugin myinfo =
 	 Bugfixes:
 	 - Fixed a bug where in case of a vote pass or veto, the corresponding message was sent to players twice and logged twice.
 
+	4.7 (21-Aug-2025)
+	 - Added Chinese translation
+	 - Added Ukrainian translation
+	 Bugfixes:
+	 - Fixed a bug that caused the vote to unban to not work if no one other than the vote initiator pressed a key.
+	 - Fixed a bug that caused abstentions to not be displayed in voting results.
+	 - Fixed a bug that caused the voting result to be displayed in case of a pass or veto.
+	 - Fixed a bug that prevented the voting results from being displayed to kicked player.
+	 Minor changes:
+	 - Code optimizations
+	 - Updated description
+	 Compatibility:
+	 - This is the last version which will work with the old (version 3.5 of this plugin) translations/l4d_votekick.phrases.txt language file, which provides English & Russian translation in one file.
+	 - Future versions (v5+) of the plugin will require updating at least the English translation file in translations/l4d_votekick.phrases.txt to addons/sourcemod/translations/l4d_votekick.phrases.txt with every new release.
+	 - The language file addons/sourcemod/translations/l4d_votekick.phrases.txt is mandatory. 
+	 - Other language files found in the subdirectories of the package's translations/ directory can be added to addons/sourcemod/translations/ if you want the respectitive languages ​​to be supported by this plugin.
+	 - E.g. copying translations/es/l4d_votekick.phrases.txt to addons/sourcemod/translations/es/l4d_votekick.phrases.txt for the Spanish translation. 
+	 - For information about the new ( as of SourceMod 1.1 ) preferred method of shipping translations ( see https://wiki.alliedmods.net/Translations_(SourceMod_Scripting) 
 	 
 	Please note: for completeness, the following changelog has been copied from Dragokas' plugin "[L4D] Votekick (no black screen)", version 3.5.
 
@@ -866,10 +890,10 @@ int GetRealClientCount() {
 //	Versus: count members of initiator team
 // 
 int GetRealTeamClientCount(int iTeam) {
-        int cnt;
-        for( int i = 1; i <= MaxClients; i++ )
-                if( IsClientInGame(i) && !IsFakeClient(i) && GetClientTeam(i) == iTeam ) cnt++; //Versus: get only number of members of team of initiator of votekick
-        return cnt;
+	int cnt;
+	for( int i = 1; i <= MaxClients; i++ )
+		if( IsClientInGame(i) && !IsFakeClient(i) && GetClientTeam(i) == iTeam ) cnt++; //Versus: get only number of members of team of initiator of votekick
+	return cnt;
 }
 
 bool IsVoteAllowed(int initiator, int target)
@@ -1224,7 +1248,7 @@ void StartVoteUnKick(int initiator, char[] sSteam)
 	PrintToConsoleAll("Vote for un-kick is started by: %N", initiator);
 	
 	LogVoteAction(initiator, "[UN-KICK STARTED] by");
-	LogVoteAction(0, "[UN-KICK AGAINST] ");
+	LogVoteAction(0, "[UN-KICK] ");
 	
 	g_bVotepass = false;
 	g_bVeto = false;
@@ -1242,6 +1266,10 @@ void StartVoteUnKick(int initiator, char[] sSteam)
 	
 	// Due to the delay of the Timer_VoteDelayed function, g_bVoteInProgress must be set here, as it is possible (and has already happened) that a second vote will begin within g_hCvarAnnounceDelay (before vote starts with menu.DisplayVote), which of course will confuse players
 	g_bVoteInProgress = true;
+	
+	//Required because the initiator's vote was not counted and the vote had no effect if no one pressed a vote button.
+	g_bVoteNoButtonPressed = true ;
+	
 	CreateTimer(g_fCvarAnnounceDelay, Timer_VoteDelayed, menu);
 	
 	CPrintHintTextToTeam( iTeam, "%t", "vote_started_announce_unkick", g_sName );
@@ -1316,17 +1344,19 @@ public int Handle_Votekick(Menu menu, MenuAction action, int player, int param2)
 
 			// in case vote is passed with CancelVote(), so MenuAction_VoteEnd is not called.
 			//
-			if ( g_bVoteInProgress && g_bVotepass ) 
-			{ 
+			if ( g_bVotepass )
+			{
 				Handler_PostVoteAction(true);
 			}
-			else if ( g_bVoteNoButtonPressed )
+			// The voting result should not be displayed in case of a pass or veto
+			//
+			else if ( g_bVoteNoButtonPressed && !g_bVeto )
 			{
 				// Initiator automatically votes against target
 				// Target votes automatically unless it is AFK
 				// Even if no one presses a button, there is at least one vote
 				//
-				VoteResultsDisplay( 0, 0, (g_bTargetManualVote?1:2), g_iNum_Clients ) ;
+				VoteResultsDisplay( 0, 0, (g_bTargetManualVote || g_iKickUserId == -1 ?1:2), g_iNum_Clients ) ;
 			}
 			
 			// does currently nothing, just in case
@@ -1374,43 +1404,66 @@ void Handler_PostVoteAction(bool bVoteSuccess)
 		}
 	}
 	else {
-		if( bVoteSuccess ) {
+		if( bVoteSuccess )
+		{
 			char sTime[32], sReasonEng[32];
 			int iTarget = GetClientOfUserId(g_iKickUserId);
+			
 			//initialize sReasonEng here, in case IsClientInGame(iTarget) == false (e.g. target timed out in the meantime or immediately disconnected by intention, in that case SM would throw an error later in CPrintToChatAll below: "Language phrase "" not found (arg 6)")
+			//
 			if( g_bCvarShowKickReason )
 				GetReason(sReasonEng, sizeof(sReasonEng));
-			if( iTarget && IsClientInGame(iTarget) ) {
+			
+			if( iTarget && IsClientInGame(iTarget) )
+			{
 				if( g_bCvarShowKickReason )
 				{
-					KickClient(iTarget, "%t: %t", "kick_for", sReasonEng);
+					CPrintToChatAll("%t. %t %t", "vote_success", g_sName, "Reason", sReasonEng);
 				}
-				else {
-					KickClient(iTarget, "%t", "kick_reason"); // You have been kicked from session
+				else
+				{
+					CPrintToChatAll("%t", "vote_success", g_sName);
 				}
-			}
-			FormatEx(sTime, sizeof(sTime), "%i", GetTime());
-			hMapSteam.SetString(g_sSteam, sTime, true);
-			hMapPlayerName.SetString(g_sSteam, g_sName, true);
-			hMapPlayerTeam.SetValue(g_sSteam, GetLogicalTeam(g_iVoteInitiatorTeam), true);
-			
-			if( g_bCvarShowKickReason )
-			{
-				CPrintToChatAll("%t. %t %t", "vote_success", g_sName, "Reason", sReasonEng);
-			}
-			else {
-				CPrintToChatAll("%t", "vote_success", g_sName);
-			}
-			
-			LogVoteAction(0, "[KICKED]");
 
-		}
-		else {
-			LogVoteAction(0, "[NOT ACCEPTED]");
-			CPrintToChatAll("%t", "vote_failed");
+				FormatEx(sTime, sizeof(sTime), "%i", GetTime());
+				hMapSteam.SetString(g_sSteam, sTime, true);
+				hMapPlayerName.SetString(g_sSteam, g_sName, true);
+				hMapPlayerTeam.SetValue(g_sSteam, GetLogicalTeam(g_iVoteInitiatorTeam), true);
+			
+				// Timer required because a kicked player did not receive the chat message
+				//
+				CreateTimer(0.1, TimerKickClient, _, TIMER_FLAG_NO_MAPCHANGE);
+			
+				LogVoteAction(0, "[KICKED]");
+
+			}
+			else 
+			{
+				LogVoteAction(0, "[NOT ACCEPTED]");
+				CPrintToChatAll("%t", "vote_failed");
+			}
 		}
 	}
 	g_bVoteInProgress = false;
+}
+
+//This function is required to delay the expulsion by a minimum of 0.1 seconds. Otherwise, the expelled user won't see the voting results.
+//
+public Action TimerKickClient( Handle timer )
+{
+	int iTarget = GetClientOfUserId(g_iKickUserId);
+	char sReasonEng[32];
+	
+	if ( g_bCvarShowKickReason )
+	{
+		GetReason(sReasonEng, sizeof(sReasonEng));
+		KickClient(iTarget, "%t: %t", "kick_for", sReasonEng);
+	}
+	else
+	{
+		KickClient(iTarget, "%t", "kick_reason"); // You have been kicked from session
+	}
+	return Plugin_Stop;
 }
 
 public void OnClientPutInServer(int client){
