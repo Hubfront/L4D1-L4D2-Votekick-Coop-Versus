@@ -194,7 +194,7 @@ public Plugin myinfo =
 	 - The language file addons/sourcemod/translations/l4d_votekick.phrases.txt is mandatory. 
 	 - Other language files found in the subdirectories of the package's translations/ directory can be added to addons/sourcemod/translations/ if you want the respectitive languages ​​to be supported by this plugin.
 	 - E.g. copying translations/es/l4d_votekick.phrases.txt to addons/sourcemod/translations/es/l4d_votekick.phrases.txt for the Spanish translation. 
-	 - For information about the new ( as of SourceMod 1.1 ) preferred method of shipping translations ( see https://wiki.alliedmods.net/Translations_(SourceMod_Scripting) 
+	 - For information about the new ( as of SourceMod 1.1 ) preferred method of shipping translations, see https://wiki.alliedmods.net/Translations_(SourceMod_Scripting) 
 	 
 	Please note: for completeness, the following changelog has been copied from Dragokas' plugin "[L4D] Votekick (no black screen)", version 3.5.
 
