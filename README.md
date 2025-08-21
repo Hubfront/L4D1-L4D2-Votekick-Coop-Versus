@@ -101,16 +101,19 @@ Requirements:
 
 Languages:
 
+    - Chinese
     - English
-	- French
-	- German
-	- Spanish
+    - French
+    - German
     - Russian
+    - Spanish
+    - Ukrainian
 
 Installation:
 
     - copy smx file to addons/sourcemod/plugins/
     - copy files and folders in translations/ to addons/sourcemod/translations/
+    - Note: only addons/sourcemod/translations/l4d_votekick.phrases.txt is mandatory, other language files are optional.
     - copy data/ .txt files to addons/sourcemod/data/
     - banfile:
       to enable, set sm_votekick_use_banfile = 1 in the cfg file. 	  
