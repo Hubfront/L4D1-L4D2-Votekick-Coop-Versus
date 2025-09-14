@@ -23,11 +23,11 @@
 	}
 	"no_access_specific"
 	{
-		"chi"		"{green}%N {orange} 尝试发起投票以踢出 {green}%s{orange}，但没有权限。"
+		"chi"		"{cyan}%N {orange} 尝试发起投票以踢出 {cyan}%s{orange}，但没有权限。"
 	}
 	"no_access_specific_unkick"
 	{
-		"chi"		"{green}%N {orange} 尝试发起投票以取消踢出 {green}%s{orange}，但没有访问权限。"
+		"chi"		"{cyan}%N {orange} 尝试发起投票以取消踢出 {cyan}%s{orange}，但没有访问权限。"
 	}
 	"no_access"
 	{
@@ -53,19 +53,19 @@
 	}
 	"vote_started"
 	{
-		"chi"		"{green}%N {orange}发起了一项投票，以踢出 {cyan}%s\n"
+		"chi"		"{cyan}%N {qhite}发起了一项投票，以踢出 {cyan}%s\n"
 	}
 	"vote_started_anonymous_initiator"
 	{
 		"chi"		"踢出 {cyan}%s{white} 的投票已开始。\n"
 	}
-	"vote_started_msg_to_otherteam"
+	"vote_started_otherteam"
 	{
-		"chi"		"另一支队伍发起了踢出投票。\n"
+		"chi"		"对方球队已开始对 %s 的驱逐进行投票。"
 	}
 	"vote_started_unkick"
 	{
-		"chi"		"green}%N {orange} 发起投票取消来自 {cyan}% 的踢出：%s"
+		"chi"		"{cyan}%N {orange} 发起投票取消来自 {cyan}% 的踢出：%s"
 	}
 	"Yes"
 	{
@@ -81,15 +81,19 @@
 	}
 	"veto"
 	{
-		"chi"		"{orange}当前投票被{green}%N否决"
+		"chi"		"{orange}当前投票被{cyan}%N否决"
 	}
 	"votepass"
 	{
-		"chi"		"{cyan}当前投票已由{green}%N通过"
+		"chi"		"{green}当前投票已由{cyan}%N通过"
 	}
 	"vote_failed"
 	{
-		"chi"		"{cyan}踢出投票 {orange} 失败。"
+		"chi"		"踢出投票 失败。"
+	}
+	"vote_failed_otherteam"
+	{
+		"chi"		"另一支球队的踢出投票失败。"
 	}
 	"vote_failed_unkick"
 	{
@@ -98,12 +102,17 @@
 	"vote_success"
 	{
 		"#format"	"{1:s}"
-		"chi"		"{green}{1} {orange} 被踢出"
+		"chi"		"{cyan}{1} {white} 被踢出"
+	}
+	"vote_success_otherteam"
+	{
+		"#format"	"{1:s}"
+		"chi"		"另一支球队以投票方式踢出{1}"
 	}
 	"vote_success_unkick"
 	{
 		"#format"	"{1:s}"
-		"chi"		"{绿色}{1} {橙色}- 禁令已解除"
+		"chi"		"{cyan}{1} {white}- 禁令已解除"
 	}
 	"kick_reason"
 	{
@@ -113,18 +122,13 @@
 	{
 		"chi"		"被踢出的原因"
 	}
-	"time_left"
-	{
-		"#format"	"{1:i}"
-		"chi"		"（还剩 {1} 分钟）"
-	}
 	"Reason_Menu"
 	{
 		"chi"		"原因"
 	}
 	"Reason"
 	{
-		"chi"		"{white}原因：{cyan}"
+		"chi"		"{white}原因：{orange}"
 	}
 	"Bad language"
 	{
@@ -170,17 +174,13 @@
 	{
 		"chi"		"投票结束。（{green}是{white} - {orange}否{white} - 未回答）：{green}%d{white} - {orange}%d{white} - %d"
 	}
-	"steamid_is_banned"
-	{
-		"chi"		"STEAM UserID %s is banned"
-	}
 	"note_to_target_automatic_vote"
 	{
-		"chi"		"注意：您的反对票将自动投出"
+		"chi"		"{green}注意：您的反对票将自动投出"
 	}
 	"note_to_target_manual_vote"
 	{
-		"chi"		"由于您不活跃，您需要手动投票反对"
+		"chi"		"{orange}由于您不活跃，您需要手动投票反对"
 	}
 	"survivor"
 	{

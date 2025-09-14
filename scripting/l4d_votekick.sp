@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "4.7"
+#define PLUGIN_VERSION "5.0_RC1"
 
 #pragma newdecls required
 #pragma semicolon 1
@@ -195,6 +195,24 @@ public Plugin myinfo =
 	 - Other language files found in the subdirectories of the package's translations/ directory can be added to addons/sourcemod/translations/ if you want the respectitive languages ​​to be supported by this plugin.
 	 - E.g. copying translations/es/l4d_votekick.phrases.txt to addons/sourcemod/translations/es/l4d_votekick.phrases.txt for the Spanish translation. 
 	 - For information about the new ( as of SourceMod 1.1 ) preferred method of shipping translations, see https://wiki.alliedmods.net/Translations_(SourceMod_Scripting) 
+
+	5.0_RC1 14-Sep-2025)
+	 - New feature for Versus: Ability to control the amount of information given to the opposing team via the kickvote message.
+	   Setting the convar to 0 provides the same information to the opposing team.
+	   Setting the convar sm_votekick_otherteam_info_level to 1 or 2 limits the amount of information the opposing team receives about the kick vote of the team that initiated the vote. 
+	 - New feature (all game modes): Possibility to configure whether the initiator of the kickvote is mentioned or not
+	   If you set Convar sm_votekick_initiator_anonymous to 1, the initiator of the kickvote will not be mentioned.
+	 New ConVars:
+	 - Added ConVar "sm_votekick_initiator_anonymous" - Should the initiator of the kickvote remain anonymous? (1 - Yes / 0 - No)
+	 - Added ConVar "sm_votekick_otherteam_info_level" - Information level for the other team (Versus) (0 - Everything / 1 - Little / 2 - Somewhat more)
+	 Language files:
+	 - Updated language files with new phrases for the new functionalities
+	 - Linguistic corrections/improvements
+	 Compatibility with translation files of previous versions:
+	 - This version (v5.X) is not compatible with language files of previous versions (v4.X, v3.X, etc.)
+	 - Mandatory: English translation file. For this plugin to work properly, you need to copy the English translation file of this version in translations/l4d_votekick.phrases.txt to addons/sourcemod/translations/l4d_votekick.phrases.txt.
+	 - Optionally: You can add additional language files located in the subdirectories of the translations/ package directory to addons/sourcemod/translations/.
+	 - E.g. copying translations/es/l4d_votekick.phrases.txt to addons/sourcemod/translations/es/l4d_votekick.phrases.txt for the Spanish translation. 
 	 
 	Please note: for completeness, the following changelog has been copied from Dragokas' plugin "[L4D] Votekick (no black screen)", version 3.5.
 
@@ -325,10 +343,12 @@ bool g_bVeto, g_bVotepass, g_bVoteInProgress, g_bVoteDisplayed, g_bTooOften[MAXP
 
 // ConVars
 ConVar g_hCvarDelay, g_hCvarKickTime, g_hCvarAnnounceDelay, g_hCvarTimeout, g_hCvarLog, g_hMinPlayers, g_hCvarAccessFlag, g_hCvarVetoFlag;
-ConVar g_hCvarGameMode, g_hCvarShowKickReason, g_hCvarShowBots, g_hCvarShowSelf, g_hCvarShowVoteDetails, g_hMinPlayersVersus, g_hCvarUseBanfile, g_hCvarUseBanfileLog, g_hCvarVersusInactiveTime;
+ConVar g_hCvarGameMode, g_hCvarShowKickReason, g_hCvarShowBots, g_hCvarShowSelf, g_hCvarShowVoteDetails, g_hMinPlayersVersus, g_hCvarUseBanfile, g_hCvarUseBanfileLog;
+ConVar g_hCvarVersusInactiveTime, g_hCvarInitiatorAnonymous, g_hCvarOtherTeamInfoLevel;
+
 float g_fCvarAnnounceDelay;
-int g_iCvarKickTime, g_iCvarDelay, g_iCvarTimeout, g_iMinPlayers, g_iCvarAccessFlag, g_iCvarVetoFlag, g_iMinPlayersVersus, g_iCvarVersusInactiveTime;
-bool g_bCvarLog, g_bCvarShowKickReason, g_bCvarShowBots, g_bCvarShowSelf, g_bCvarShowVoteDetails, g_bCvarUseBanfile, g_bCvarUseBanfileLog;
+int g_iCvarKickTime, g_iCvarDelay, g_iCvarTimeout, g_iMinPlayers, g_iCvarAccessFlag, g_iCvarVetoFlag, g_iMinPlayersVersus, g_iCvarVersusInactiveTime, g_iCvarVsOtherTeamInfoLevel;
+bool g_bCvarLog, g_bCvarShowKickReason, g_bCvarShowBots, g_bCvarShowSelf, g_bCvarShowVoteDetails, g_bCvarUseBanfile, g_bCvarUseBanfileLog, g_bCvarInitiatorAnonymous;
 
 public void OnPluginStart()
 {
@@ -337,7 +357,7 @@ public void OnPluginStart()
 	
 	g_hCvarDelay = CreateConVar(				"sm_votekick_delay",				"60",			"Minimum delay (in sec.) allowed between votes", CVAR_FLAGS );
 	g_hCvarTimeout = CreateConVar(				"sm_votekick_timeout",				"10",			"How long (in sec.) does the vote last", CVAR_FLAGS );
-	g_hCvarAnnounceDelay = CreateConVar(		"sm_votekick_announcedelay",		"2.0",			"Delay (in sec.) between announce and vote menu appearing", CVAR_FLAGS );
+	g_hCvarAnnounceDelay = CreateConVar(		"sm_votekick_announcedelay",		"0.0",			"Delay (in sec.) between announce and vote menu appearing", CVAR_FLAGS );
 	g_hCvarKickTime = CreateConVar(				"sm_votekick_kicktime",				"3600",			"How long player will be kicked (in sec.)", CVAR_FLAGS );
 	g_hMinPlayers = CreateConVar(				"sm_votekick_minplayers",			"1",			"Minimum players present in game to allow starting vote for kick", CVAR_FLAGS );
 	g_hMinPlayersVersus = CreateConVar(			"sm_votekick_minplayers_versus",	"1",			"Minimum players present in team to allow starting vote for kick (Versus gamemode)", CVAR_FLAGS );
@@ -351,6 +371,8 @@ public void OnPluginStart()
 	g_hCvarUseBanfile = CreateConVar(			"sm_votekick_use_banfile",			"0",			"Use file based temporary bans? (1 - Yes / 0 - No)", CVAR_FLAGS );	
 	g_hCvarUseBanfileLog = CreateConVar(		"sm_votekick_use_banfile_log",		"1",			"File based temporary bans: log attempts to join the server? (1 - Yes / 0 - No)", CVAR_FLAGS );	
 	g_hCvarVersusInactiveTime = CreateConVar(	"sm_votekick_versus_inactive_time",	"45",			"Time (in sec.) after which an inactive player is considered AFK. In a kick vote against him, he can then only vote manually", CVAR_FLAGS );	
+	g_hCvarInitiatorAnonymous = CreateConVar(	"sm_votekick_initiator_anonymous",	"1",			"Should the initiator of the kickvote remain anonymous? (1 - Yes / 0 - No)", CVAR_FLAGS );	
+	g_hCvarOtherTeamInfoLevel = CreateConVar(	"sm_votekick_otherteam_info_level",	"1",			"Information level for the other team (Versus) (0 - Everything / 1 - Little / 2 - Somewhat more)", CVAR_FLAGS );	
 	
 	AutoExecConfig(true,				"sm_votekick");
 	
@@ -413,6 +435,8 @@ public void OnPluginStart()
 	g_hCvarUseBanfile.AddChangeHook(OnCvarChanged);
 	g_hCvarUseBanfileLog.AddChangeHook(OnCvarChanged);
 	g_hCvarVersusInactiveTime.AddChangeHook(OnCvarChanged);
+	g_hCvarInitiatorAnonymous.AddChangeHook(OnCvarChanged);
+	g_hCvarOtherTeamInfoLevel.AddChangeHook(OnCvarChanged);
 	
 	GetCvars();
 }
@@ -445,6 +469,8 @@ void GetCvars()
 	g_bCvarUseBanfile = g_hCvarUseBanfile.BoolValue;
 	g_bCvarUseBanfileLog = g_hCvarUseBanfileLog.BoolValue;
 	g_iCvarVersusInactiveTime = g_hCvarVersusInactiveTime.IntValue;
+	g_bCvarInitiatorAnonymous = g_hCvarInitiatorAnonymous.BoolValue;
+	g_iCvarVsOtherTeamInfoLevel = g_hCvarOtherTeamInfoLevel.IntValue;
 	
 	char sReq[32];
 	g_hCvarVetoFlag.GetString(sReq, sizeof(sReq));
@@ -1099,7 +1125,7 @@ void VoteResultsDisplay(int yesVotes, int noVotes, int num_votes = 0, int num_cl
 	// don't show voting results in case of a votepass or veto
 	//
 	if( g_bCvarShowVoteDetails && (!g_bVotepass || !g_bVeto) )
-		if( g_bIsVersus ) 
+		if( g_bIsVersus && g_iCvarVsOtherTeamInfoLevel > 0 ) 
 			CPrintToChatTeam( g_iVoteInitiatorTeam, "%t", "detailed_vote_results", yesVotes, noVotes, (num_clients-num_votes) );
 		else
 			CPrintToChatAll( "%t", "detailed_vote_results", yesVotes, noVotes, (num_clients-num_votes) );
@@ -1173,41 +1199,60 @@ void StartVoteKick(int initiator, int target)
 		GetReason(sReasonEng, sizeof(sReasonEng));
 		LogVoteAction(0, "[REASON] %s", sReasonEng);
 		
-		if ( !g_bTargetManualVote ) {
-			if ( TranslationPhraseExists("note_to_target_automatic_vote") )
-				CPrintToChat(target, "%t", "note_to_target_automatic_vote"); // "Note: Your vote against will be cast automatically" -- added to phrases.txt in v4.4
+		// Msg to issuer team
+		if ( g_bCvarInitiatorAnonymous ) 
+			if ( g_bIsVersus && g_iCvarVsOtherTeamInfoLevel > 0 )
+				// vote_started_anonymous_initiator -- added to phrases.txt in v5.0
+				CPrintToChatTeam( iTeam, "%t \x01(%t %t\x01)", "vote_started_anonymous_initiator", g_sName, "Reason", sReasonEng);
 			else
-				CPrintToChat(target, "Note: Your vote against will be cast automatically"); // Fallback, compatibility with v3.5 phrases.txt
-		} else {
-			if ( TranslationPhraseExists("note_to_target_manual_vote") )
-				CPrintToChat(target, "%t", "note_to_target_manual_vote"); // "Since you are inactive, you must manually vote against it" -- added to phrases.txt in v4.4
+				CPrintToChatAll( "%t \x01(%t %t\x01)", "vote_started_anonymous_initiator", g_sName, "Reason", sReasonEng);
+		else
+			if ( g_bIsVersus && g_iCvarVsOtherTeamInfoLevel > 0 )
+				CPrintToChatTeam( iTeam, "%t \x01(%t %t\x01)", "vote_started", initiator, g_sName, "Reason", sReasonEng);
 			else
-				CPrintToChat(target, "Since you are inactive, you need to vote manually against it"); // Fallback, compatibility with v3.5 phrases.txt
-		}
+				CPrintToChatAll("%t \x01(%t %t\x01)", "vote_started", initiator, g_sName, "Reason", sReasonEng);
 
-		CPrintToChatAll("%t \x01(%t %t\x01)", "vote_started", initiator, g_sName, "Reason", sReasonEng);
+		// Msg to other team
+		if ( g_bIsVersus && g_iCvarVsOtherTeamInfoLevel == 2)
+			// vote_started_otherteam -- added to phrases.txt in v5.0
+			CPrintToChatTeam(GetOppositeTeam(iTeam), "%t", "vote_started_otherteam", g_sName);
+
 		CPrintHintTextToTeam( iTeam, "%t\n(%t: %t)", "vote_started_announce", g_sName, "Reason_Menu", sReasonEng);
 	}
 	else
 	{
-		if ( !g_bTargetManualVote ) {
-			if ( TranslationPhraseExists("note_to_target_automatic_vote") )
-				CPrintToChat(target, "%t", "note_to_target_automatic_vote"); // "Note: Your vote against will be cast automatically" -- added to phrases.txt in v4.4
-			else
-				CPrintToChat(target, "Note: Your vote against will be cast automatically"); // compatibility with v3.5 phrases.txt
-		} else {
-			if ( TranslationPhraseExists("note_to_target_manual_vote") )
-				CPrintToChat(target, "%t", "note_to_target_manual_vote"); // "Since you are inactive, you must manually vote against it" -- added to phrases.txt in v4.4
-			else
-				CPrintToChat(target, "Since you are inactive, you need to vote manually against it"); // Fallback, compatibility with v3.5 phrases.txt
-		}
+		// Msg to issuer team
+		if ( g_bCvarInitiatorAnonymous )
+			if ( g_bIsVersus && g_iCvarVsOtherTeamInfoLevel > 0 ) {
+				CPrintToChatTeam( iTeam, "%t", "vote_started_anonymous_initiator", g_sName );
+			} else
+				CPrintToChatAll( "%t", "vote_started_anonymous_initiator", g_sName );
+		else
+			if ( g_bIsVersus && g_iCvarVsOtherTeamInfoLevel > 0 ) {
+				CPrintToChatTeam( iTeam, "%t", "vote_started", initiator, g_sName );
+			} else
+				CPrintToChatAll( "%t", "vote_started", initiator, g_sName );
+			
+		// Msg to other team
+		if ( g_bIsVersus && g_iCvarVsOtherTeamInfoLevel == 2 )
+			CPrintToChatTeam(GetOppositeTeam(iTeam), "%t", "vote_started_otherteam", g_sName);
 
-		CPrintToChatAll("%t", "vote_started", initiator, g_sName); // %N is started vote for kick: %s
-		CPrintHintTextToTeam( iTeam, "%t", "vote_started_announce", g_sName);
+		CPrintHintTextToTeam( iTeam, "%t", "vote_started_announce", g_sName );
 	}
 
-	PrintToServer("Vote for kick is started by: %N", initiator);
-	PrintToConsoleAll("Vote for kick is started by: %N", initiator);
+	// Inform target how to vote against Kickvote (depends on whether he is considered active or inactive)
+	//
+
+	if ( !g_bTargetManualVote )
+		CPrintToChat(target, "%t", "note_to_target_automatic_vote"); // "Note: Your vote against will be cast automatically" -- added to phrases.txt in v4.4
+	else
+		CPrintToChat(target, "%t", "note_to_target_manual_vote"); // "Since you are inactive, you must manually vote against it" -- added to phrases.txt in v4.4
+
+	PrintToServer("Voting for Kick is started by: %N", initiator);
+	if ( g_bCvarInitiatorAnonymous )
+		PrintToConsoleAll("A vote for Kick has been started");
+	else
+		PrintToConsoleAll("Voting for Kick is started by: %N", initiator);
 		
 	// Due to the delay of the Timer_VoteDelayed function, g_bVoteInProgress must be set here, as it is possible (and has already happened) that a second vote will begin within g_hCvarAnnounceDelay (before vote starts with menu.DisplayVote), which of course will confuse players
 	g_bVoteInProgress = true;
@@ -1243,17 +1288,25 @@ void StartVoteUnKick(int initiator, char[] sSteam)
 	g_sIP[0] = 0;
 	g_sCountry[0] = 0;
 	
-	CPrintToChatAll("%t", "vote_started_unkick", initiator, g_sName); // %N is started vote for un-kick: %s
+	g_bVotepass = false;
+	g_bVeto = false;
+	g_bVoteDisplayed = false;
+	int iTeam = g_iVoteInitiatorTeam = GetClientTeam(initiator);
+
+	if ( g_bIsVersus && g_iCvarVsOtherTeamInfoLevel > 0 )
+		// vote_started_unkick_otherteam -- added to phrases.txt in v5.0
+		CPrintToChatTeam( GetOppositeTeam(iTeam), "%t", "vote_started_unkick_otherteam", g_sName);
+	else if ( g_bCvarInitiatorAnonymous )
+		// vote_started_unkick_anonymous_initiator -- added to phrases.txt in v5.0
+		CPrintToChatAll("%t", "vote_started_unkick_anonymous_initiator", g_sName); // A vote to un-kick {cyan}%s{white} has been started.
+	else
+		CPrintToChatAll("%t", "vote_started_unkick", initiator, g_sName); // %N is started vote for un-kick: %s
+	
 	PrintToServer("Vote for un-kick is started by: %N", initiator);
 	PrintToConsoleAll("Vote for un-kick is started by: %N", initiator);
 	
 	LogVoteAction(initiator, "[UN-KICK STARTED] by");
 	LogVoteAction(0, "[UN-KICK] ");
-	
-	g_bVotepass = false;
-	g_bVeto = false;
-	g_bVoteDisplayed = false;
-	int iTeam = g_iVoteInitiatorTeam = GetClientTeam(initiator);
 
 	if( g_bIsVersus )
 	{
@@ -1400,53 +1453,70 @@ void Handler_PostVoteAction(bool bVoteSuccess)
 		}
 		else {
 			LogVoteAction(0, "[NOT ACCEPTED]");
-			CPrintToChatAll("%t", "vote_failed_unkick");
+			CPrintToChatAll("%t", "vote_failed_unkick", g_sName);
 		}
 	}
 	else {
-		if( bVoteSuccess )
-		{
+		if( bVoteSuccess ) {
 			char sTime[32], sReasonEng[32];
 			int iTarget = GetClientOfUserId(g_iKickUserId);
-			
 			//initialize sReasonEng here, in case IsClientInGame(iTarget) == false (e.g. target timed out in the meantime or immediately disconnected by intention, in that case SM would throw an error later in CPrintToChatAll below: "Language phrase "" not found (arg 6)")
-			//
 			if( g_bCvarShowKickReason )
 				GetReason(sReasonEng, sizeof(sReasonEng));
-			
-			if( iTarget && IsClientInGame(iTarget) )
-			{
+			if( iTarget && IsClientInGame(iTarget) ) {
 				if( g_bCvarShowKickReason )
 				{
-					CPrintToChatAll("%t. %t %t", "vote_success", g_sName, "Reason", sReasonEng);
+					if ( g_bIsVersus && g_iCvarVsOtherTeamInfoLevel > 0 )
+					{
+						CPrintToChatTeam(g_iVoteInitiatorTeam, "%t. %t %t", "vote_success", g_sName, "Reason", sReasonEng);
+						// vote_success_otherteam -- added to phrases.txt in v5.0
+						CPrintToChatTeam(GetOppositeTeam(g_iVoteInitiatorTeam), "%t", "vote_success_otherteam", g_sName);
+					}
+					else {
+						CPrintToChatAll("%t. %t %t", "vote_success", g_sName, "Reason", sReasonEng);
+					}
 				}
-				else
-				{
-					CPrintToChatAll("%t", "vote_success", g_sName);
+				else {
+					if ( g_bIsVersus && g_iCvarVsOtherTeamInfoLevel > 0 )
+					{
+						CPrintToChatTeam(g_iVoteInitiatorTeam, "%t", "vote_success", g_sName);
+						CPrintToChatTeam(GetOppositeTeam(g_iVoteInitiatorTeam), "%t", "vote_success_otherteam", g_sName);
+					}
+					else {
+						CPrintToChatAll("%t", "vote_success", g_sName);
+					}
+					
 				}
 
-				FormatEx(sTime, sizeof(sTime), "%i", GetTime());
-				hMapSteam.SetString(g_sSteam, sTime, true);
-				hMapPlayerName.SetString(g_sSteam, g_sName, true);
-				hMapPlayerTeam.SetValue(g_sSteam, GetLogicalTeam(g_iVoteInitiatorTeam), true);
-			
 				// Timer required because a kicked player did not receive the chat message
 				//
-				CreateTimer(0.1, TimerKickClient, _, TIMER_FLAG_NO_MAPCHANGE);
+				CreateTimer(0.5, TimerKickClient, _, TIMER_FLAG_NO_MAPCHANGE);
+			}
+			FormatEx(sTime, sizeof(sTime), "%i", GetTime());
+			hMapSteam.SetString(g_sSteam, sTime, true);
+			hMapPlayerName.SetString(g_sSteam, g_sName, true);
+			hMapPlayerTeam.SetValue(g_sSteam, GetLogicalTeam(g_iVoteInitiatorTeam), true);
 			
-				LogVoteAction(0, "[KICKED]");
+			LogVoteAction(0, "[KICKED]");
 
+		}
+		else {
+			LogVoteAction(0, "[NOT ACCEPTED]");
+			
+			if ( g_bIsVersus && g_iCvarVsOtherTeamInfoLevel == 2 ) {
+				CPrintToChatTeam(g_iVoteInitiatorTeam, "%t", "vote_failed");
+				// vote_failed_otherteam -- added to phrases.txt in v5.0
+				CPrintToChatTeam(GetOppositeTeam(g_iVoteInitiatorTeam), "%t", "vote_failed_otherteam");
 			}
-			else 
-			{
-				LogVoteAction(0, "[NOT ACCEPTED]");
+			else if ( g_bIsVersus && g_iCvarVsOtherTeamInfoLevel == 1 )
+				CPrintToChatTeam(g_iVoteInitiatorTeam, "%t", "vote_failed");
+			else if ( !g_bIsVersus || g_iCvarVsOtherTeamInfoLevel == 0 )
 				CPrintToChatAll("%t", "vote_failed");
-			}
 		}
 	}
 	g_bVoteInProgress = false;
 }
-
+ 
 //This function is required to delay the expulsion by a minimum of 0.1 seconds. Otherwise, the expelled user won't see the voting results.
 //
 public Action TimerKickClient( Handle timer )
@@ -1741,6 +1811,16 @@ void NormalizeName(char[] name, int len)
 int GetLogicalTeam(int iTeam)
 {
     return (iTeam ^ GameRules_GetProp("m_bAreTeamsFlipped", 1)) - 1;
+}  
+
+// Returns client team number of the opposite team
+//
+int GetOppositeTeam(int iTeam)
+{
+    if ( iTeam == 2 )
+		return 3;
+	else
+		return 2;
 }  
 
 // Seconds to days, hours, minutes, seconds

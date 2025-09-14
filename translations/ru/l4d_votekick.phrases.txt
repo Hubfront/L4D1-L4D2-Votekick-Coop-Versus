@@ -23,11 +23,11 @@
 	}
 	"no_access_specific"
 	{
-		"ru"		"{green}%N {orange}пытается голосовать за кик против {green}%s{orange}, но не имеет доступа."
+		"ru"		"{cyan}%N {orange}пытается голосовать за кик против {cyan}%s{orange}, но не имеет доступа."
 	}
 	"no_access_specific_unkick"
 	{
-		"ru"		"{green}%N {orange}пытается голосовать за снятие кика с {green}%s{orange}, но не имеет доступа."
+		"ru"		"{cyan}%N {orange}пытается голосовать за снятие кика с {cyan}%s{orange}, но не имеет доступа."
 	}
 	"no_access"
 	{
@@ -53,19 +53,19 @@
 	}
 	"vote_started"
 	{
-		"ru"		"{green}%N {orange}начал голосование за кик: {cyan}%s\n"
+		"ru"		"{cyan}%N {white}начал голосование за кик: {cyan}%s\n"
 	}
 	"vote_started_anonymous_initiator"
 	{
 		"ru"		"Началось голосование за исключение {cyan}%s{white}\n"
 	}
-	"vote_started_msg_to_otherteam"
+	"vote_started_otherteam"
 	{
-		"ru"		"Другая команда начала голосование за их выселение.\n"
+		"ru"		"Другая команда начала голосовать за выселение %s."
 	}
 	"vote_started_unkick"
 	{
-		"ru"		"{green}%N {orange}начал голосование за снятие кика с: {cyan}%s"
+		"ru"		"{cyan}%N {orange}начал голосование за снятие кика с: {cyan}%s"
 	}
 	"Yes"
 	{
@@ -81,29 +81,38 @@
 	}
 	"veto"
 	{
-		"ru"		"{green}%N {orange}наложил вето на голосование"
+		"ru"		"{cyan}%N {white}наложил вето на голосование"
 	}
 	"votepass"
 	{
-		"ru"		"{green}%N {cyan}принудительно продвинул голосование"
+		"ru"		"{cyan}%N {white}принудительно продвинул голосование"
 	}
 	"vote_failed"
 	{
-		"ru"		"{cyan}Голосование за кик {orange}провалилось."
+		"ru"		"Голосование за кик {orange}провалилось."
+	}
+	"vote_failed_otherteam"
+	{
+		"ru"		"Голосование другой команды по исключению игрока не состоялось."
 	}
 	"vote_failed_unkick"
 	{
-		"ru"		"{cyan}Голосование за снятие кика {orange}провалилось."
+		"ru"		"Голосование за снятие кика провалилось."
 	}
 	"vote_success"
 	{
 		"#format"	"{1:s}"
-		"ru"		"{green}{1} {orange}был кикнут"
+		"ru"		"{cyan}{1} {white}был кикнут"
+	}
+	"vote_success_otherteam"
+	{
+		"#format"	"{1:s}"
+		"ru"		"Другая команда выгнала {1} путем голосования."
 	}
 	"vote_success_unkick"
 	{
 		"#format"	"{1:s}"
-		"ru"		"{green}{1} {orange}- кик был снят"
+		"ru"		"{cyan}{1} {orange}- кик был снят"
 	}
 	"kick_reason"
 	{
@@ -113,18 +122,13 @@
 	{
 		"ru"		"Кикнут за"
 	}
-	"time_left"
-	{
-		"#format"	"{1:i}"
-		"ru"		"({1} мин. осталось)"
-	}
 	"Reason_Menu"
 	{
 		"ru"		"Причина"
 	}
 	"Reason"
 	{
-		"ru"		"{white}Причина:{cyan}"
+		"ru"		"{white}Причина:{orange}"
 	}
 	"Bad language"
 	{
@@ -170,17 +174,13 @@
 	{
 		"ru"		"Голосование завершено.  ({green}За{white} – {orange}Против{white} – без ответа):  {green}%d{white} – {orange}%d{white} – %d"
 	}
-	"steamid_is_banned"
-	{
-		"ru"		"STEAM UserID %s забанен"
-	}
 	"note_to_target_automatic_vote"
 	{
-		"ru"		"Примечание: Ваш «нет»-голос будет учтен автоматически"
+		"ru"		"{green}Примечание: Ваш «нет»-голос будет учтен автоматически"
 	}
 	"note_to_target_manual_vote"
 	{
-		"ru"		"Поскольку вы неактивны, вам придется проголосовать вручную."
+		"ru"		"{orange}Поскольку вы неактивны, вам придется проголосовать вручную."
 	}
 	"survivor"
 	{

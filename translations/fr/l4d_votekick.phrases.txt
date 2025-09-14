@@ -23,11 +23,11 @@
 	}
 	"no_access_specific"
 	{
-		"fr"		"{green}%N {orange}a essayé de lancer un vote pour expulser {green}%s{orange}, mais n'y a pas accès."
+		"fr"		"{cyan}%N {orange}a essayé de lancer un vote pour expulser {cyan}%s{orange}, mais n'y a pas accès."
 	}
 	"no_access_specific_unkick"
 	{
-		"fr"		"{green}%N {orange}a essayé de lancer un vote pour annuler l'expulsion de {green}%s{orange}, mais n'y a pas accès."
+		"fr"		"{cyan}%N {orange}a essayé de lancer un vote pour annuler l'expulsion de {cyan}%s{orange}, mais n'y a pas accès."
 	}
 	"no_access"
 	{
@@ -53,19 +53,19 @@
 	}
 	"vote_started"
 	{
-		"fr"		"{green}%N {orange}lancer un vote pour expulser {cayenne}%s\n"
+		"fr"		"{cyan}%N {orange}lancer un vote pour expulser {cayenne}%s\n"
 	}
 	"vote_started_anonymous_initiator"
 	{
 		"fr"		"Un vote pour expulser {cyan}%s{white} a été lancé\n"
 	}
-	"vote_started_msg_to_otherteam"
+	"vote_started_otherteam"
 	{
-		"fr"		"L'autre équipe a lancé un kickvote.\n"
+		"fr"		"L'autre équipe a lancé un vote pour expulser %s."
 	}
 	"vote_started_unkick"
 	{
-		"fr"		"{green}%N {orange}a lancé un vote pour annuler l'expulsion de : {cyan}%s"
+		"fr"		"{cyan}%N {orange}a lancé un vote pour annuler l'expulsion de : {cyan}%s"
 	}
 	"Yes"
 	{
@@ -81,29 +81,38 @@
 	}
 	"veto"
 	{
-		"fr"		"{orange}Le vote actuel est rejeté par {green}%N"
+		"fr"		"{orange}Le vote actuel est rejeté par {cyan}%N"
 	}
 	"votepass"
 	{
-		"fr"		"{cyan}Le vote actuel d'expulsion est approuvé par {green}%N"
+		"fr"		"{green}Le vote actuel d'expulsion est approuvé par {cyan}%N"
 	}
 	"vote_failed"
 	{
-		"fr"		"{cyan}Le vote {orange} n’a pas abouti."
+		"fr"		"Le vote n’a pas abouti."
+	}
+	"vote_failed_otherteam"
+	{
+		"fr"		"Un vote de kick par l'autre équipe a échoué."
 	}
 	"vote_failed_unkick"
 	{
-		"fr"		"{cyan}Le vote pour annuler l'expulsion {orange} a échoué."
+		"fr"		"Le vote pour annuler l'expulsion {orange} a échoué."
 	}
 	"vote_success"
 	{
 		"#format"	"{1:s}"
-		"fr"		"vert}{1}{orange}est expulsé"
+		"fr"		"{cyan}{1}{white}est expulsé"
+	}
+	"vote_success_otherteam"
+	{
+		"#format"	"{1:s}"
+		"fr"		"L'autre équipe a expulsé {1} par vote"
 	}
 	"vote_success_unkick"
 	{
 		"#format"	"{1:s}"
-		"fr"		"{green}{1} {orange}- le verrou est levé."
+		"fr"		"{cyan}{1} {orange}- le verrou est levé."
 	}
 	"kick_reason"
 	{
@@ -113,18 +122,13 @@
 	{
 		"fr"		"Expulsé à cause de"
 	}
-	"time_left"
-	{
-		"#format"	"{1:i}"
-		"fr"		"({1} min. left)"
-	}
 	"Reason_Menu"
 	{
 		"fr"		"Raison"
 	}
 	"Reason"
 	{
-		"fr"		"{white}Raison:{cyan}"
+		"fr"		"{white}Raison:{orange}"
 	}
 	"Bad language"
 	{
@@ -170,17 +174,13 @@
 	{
 		"fr"		"Vote terminé. ({green}Oui{white} - {orange}Non{white} - Sans réponse) : {green}%d{white} - {orange}%d{white} - %d"
 	}
-	"steamid_is_banned"
-	{
-		"fr"		"STEAM UserID %s is banned"
-	}
 	"note_to_target_automatic_vote"
 	{
-		"fr"		"Remarque : votre vote contre sera automatiquement exprimé"
+		"fr"		"{green}Remarque : votre vote contre sera automatiquement exprimé"
 	}
 	"note_to_target_manual_vote"
 	{
-		"fr"		"Puisque vous êtes inactif, vous devez voter manuellement contre."
+		"fr"		"{orange}Puisque vous êtes inactif, vous devez voter manuellement contre."
 	}
 	"survivor"
 	{

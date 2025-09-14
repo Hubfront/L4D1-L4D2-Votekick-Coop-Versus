@@ -8,7 +8,9 @@ Description:
 
 Features:
 
-    - full support for both game modes: Co-op and Versus (L4D1 & L4D2)
+    - *New* ability to control the amount of information given to the opposing team via the kickvote message (Versus gamemode)
+	- *New* Possibility to configure whether the initiator of the kickvote is mentioned or not (all game modes)
+	- full support for both game modes: Co-op and Versus (L4D1 & L4D2)
     - prevents a serious vote kick exploit in the official L4D1 kick vote: A kick from a successful vote has no effect if the kicked player leaves the game shortly before the vote ends. Some players exploit this to disrupt other players' gameplay.
     - the kick vote is now kept as short as possible (version 4.5): the vote of the initiator of the vote and the vote of the player to be kicked who is not inactive are cast automatically (similar to the official L4D behavior).
     - simple temporary bans: ability to exclude a list of users you may not want to connect for a given time period. Excluded users receive the message "STEAM UserID is banned."
@@ -85,6 +87,8 @@ Settings (ConVars):
     - sm_votekick_use_banfile - def.: 0 - Use file based temporary bans? (1 - Yes / 0 - No)
     - sm_votekick_use_banfile_log - def.: 1 - File based temporary bans: log attempts to join the server? (1 - Yes / 0 - No)
     - sm_votekick_versus_inactive_time - def.: 45 - Time (in sec.) after which an inactive player is considered AFK. In a kick vote against him, he can then only vote manually
+	- sm_votekick_initiator_anonymous - def.: 1 - Should the initiator of the kickvote remain anonymous? (1 - Yes / 0 - No)
+	- sm_votekick_otherteam_info_level - def.: 1 -  Information level for the other team (Versus) (0 - Everything / 1 - Little / 2 - Somewhat more)
 
 Commands:
 

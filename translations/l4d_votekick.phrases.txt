@@ -23,11 +23,11 @@
 	}
 	"no_access_specific"
 	{
-		"en"		"{green}%N {orange}tried to start a vote to kick {green}%s{orange}, but doesn't have access."
+		"en"		"{cyan}%N {orange}tried to start a vote to kick {cyan}%s{orange}, but doesn't have access."
 	}
 	"no_access_specific_unkick"
 	{
-		"en"		"{green}%N {orange}tried to start a vote to un-kick {green}%s{orange}, but doesn't have access."
+		"en"		"{cyan}%N {orange}tried to start a vote to un-kick {cyan}%s{orange}, but doesn't have access."
 	}
 	"no_access"
 	{
@@ -53,19 +53,27 @@
 	}
 	"vote_started"
 	{
-		"en"		"{green}%N {orange}started a vote to kick {cyan}%s\n"
+		"en"		"{cyan}%N {white}started a vote to kick {cyan}%s\n"
 	}
 	"vote_started_anonymous_initiator"
 	{
 		"en"		"A vote to kick {cyan}%s{white} has been started.\n"
 	}
-	"vote_started_msg_to_otherteam"
+	"vote_started_otherteam"
 	{
-		"en"		"The other team started a kickvote.\n"
+		"en"		"The other team started a vote to kick %s.\n"
 	}
 	"vote_started_unkick"
 	{
-		"en"		"{green}%N {orange}started a vote to un-kick: {cyan}%s"
+		"en"		"{cyan}%N {white}started a vote to un-kick: {cyan}%s"
+	}
+	"vote_started_unkick_anonymous_initiator"
+	{
+		"en"		"A vote to un-kick {cyan}%s{white} has been started.\n"
+	}
+	"vote_started_unkick_otherteam"
+	{
+		"en"		"The other team started a vote to un-kick: {cyan}%s"
 	}
 	"Yes"
 	{
@@ -81,38 +89,38 @@
 	}
 	"veto"
 	{
-		"en"		"{orange}Current vote is vetoed by {green}%N"
+		"en"		"{orange}Current vote is vetoed by {cyan}%N"
 	}
 	"votepass"
 	{
-		"en"		"{cyan}Current vote is passed by {green}%N"
+		"en"		"{green}Current vote is passed by {cyan}%N"
 	}
 	"vote_failed"
 	{
-		"en"		"{cyan}The kick vote {orange}failed."
+		"en"		"The kick vote failed."
 	}
 	"vote_failed_otherteam"
 	{
-		"en"		"A kick vote by the other team failed."
+		"en"		"The kick vote by the other team failed."
 	}
 	"vote_failed_unkick"
 	{
-		"en"		"{cyan}The vote to remove the ban {orange}failed."
+		"en"		"The vote to remove the ban failed."
 	}
 	"vote_success"
 	{
 		"#format"	"{1:s}"
-		"en"		"{green}{1} {orange}is kicked out"
+		"en"		"{cyan}{1} {white}is kicked out"
 	}
 	"vote_success_otherteam"
 	{
 		"#format"	"{1:s}"
-		"en"		"{1} is kicked out by vote"
+		"en"		"The other team kicked {1} by vote"
 	}
 	"vote_success_unkick"
 	{
 		"#format"	"{1:s}"
-		"en"		"{green}{1} {orange}- ban is removed"
+		"en"		"{cyan}{1} {white}- ban is removed"
 	}
 	"kick_reason"
 	{
@@ -133,7 +141,7 @@
 	}
 	"Reason"
 	{
-		"en"		"{white}Reason:{cyan}"
+		"en"		"{white}Reason:{orange}"
 	}
 	"Bad language"
 	{
@@ -185,11 +193,11 @@
 	}
 	"note_to_target_automatic_vote"
 	{
-		"en"		"Note: Your vote against will be cast {green]automatically"
+		"en"		"{green}Note: Your vote against will be cast automatically"
 	}
 	"note_to_target_manual_vote"
 	{
-		"en"		"Since you are inactive, you need to vote {orange}manually{white} against it"
+		"en"		"{orange}Since you are inactive, you need to vote manually against it"
 	}
 	"survivor"
 	{
