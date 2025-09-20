@@ -214,9 +214,11 @@ public Plugin myinfo =
 	 - Linguistic corrections/improvements
 	 Compatibility with translation files of previous versions:
 	 - This version (v5.X) is not compatible with language files of previous versions (v4.X, v3.X, etc.)
-	 - Mandatory: English translation file. For this plugin to work properly, you need to copy the English translation file of this version in translations/l4d_votekick.phrases.txt to addons/sourcemod/translations/l4d_votekick.phrases.txt.
+	 - * Mandatory *: English translation file. For this plugin to work properly, you need to copy the English translation file of this version in translations/l4d_votekick.phrases.txt to addons/sourcemod/translations/l4d_votekick.phrases.txt.
 	 - Optionally: You can add additional language files located in the subdirectories of the translations/ package directory to addons/sourcemod/translations/.
 	 - E.g. copying translations/es/l4d_votekick.phrases.txt to addons/sourcemod/translations/es/l4d_votekick.phrases.txt for the Spanish translation. 
+	 Minor changes:
+	 - Updated description
 	 
 	Please note: for completeness, the following changelog has been copied from Dragokas' plugin "[L4D] Votekick (no black screen)", version 3.5.
 
