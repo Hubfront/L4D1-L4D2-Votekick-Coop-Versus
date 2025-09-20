@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "5.0_RC1"
+#define PLUGIN_VERSION "5.0_RC2"
 
 #pragma newdecls required
 #pragma semicolon 1
@@ -196,12 +196,16 @@ public Plugin myinfo =
 	 - E.g. copying translations/es/l4d_votekick.phrases.txt to addons/sourcemod/translations/es/l4d_votekick.phrases.txt for the Spanish translation. 
 	 - For information about the new ( as of SourceMod 1.1 ) preferred method of shipping translations, see https://wiki.alliedmods.net/Translations_(SourceMod_Scripting) 
 
-	5.0_RC1 14-Sep-2025)
+	5.0_RC2 20-Sep-2025)
 	 - New feature for Versus: Ability to control the amount of information given to the opposing team via the kickvote message.
 	   Setting the convar to 0 provides the same information to the opposing team.
 	   Setting the convar sm_votekick_otherteam_info_level to 1 or 2 limits the amount of information the opposing team receives about the kick vote of the team that initiated the vote. 
 	 - New feature (all game modes): Possibility to configure whether the initiator of the kickvote is mentioned or not
 	   If you set Convar sm_votekick_initiator_anonymous to 1, the initiator of the kickvote will not be mentioned.
+	 - CVARS defaults changed. Reason: more direct voting
+	   * sm_votekick_announcedelay defaults to "0.0" (previously "2.0")
+	 Bugfixes:
+	 - Fixed a bug where the number of bots was not displayed in the voting result if the ConVar "sm_votekick_show_bots" was set to "1"
 	 New ConVars:
 	 - Added ConVar "sm_votekick_initiator_anonymous" - Should the initiator of the kickvote remain anonymous? (1 - Yes / 0 - No)
 	 - Added ConVar "sm_votekick_otherteam_info_level" - Information level for the other team (Versus) (0 - Everything / 1 - Little / 2 - Somewhat more)
@@ -372,7 +376,7 @@ public void OnPluginStart()
 	g_hCvarUseBanfileLog = CreateConVar(		"sm_votekick_use_banfile_log",		"1",			"File based temporary bans: log attempts to join the server? (1 - Yes / 0 - No)", CVAR_FLAGS );	
 	g_hCvarVersusInactiveTime = CreateConVar(	"sm_votekick_versus_inactive_time",	"45",			"Time (in sec.) after which an inactive player is considered AFK. In a kick vote against him, he can then only vote manually", CVAR_FLAGS );	
 	g_hCvarInitiatorAnonymous = CreateConVar(	"sm_votekick_initiator_anonymous",	"1",			"Should the initiator of the kickvote remain anonymous? (1 - Yes / 0 - No)", CVAR_FLAGS );	
-	g_hCvarOtherTeamInfoLevel = CreateConVar(	"sm_votekick_otherteam_info_level",	"1",			"Information level for the other team (Versus) (0 - Everything / 1 - Little / 2 - Somewhat more)", CVAR_FLAGS );	
+	g_hCvarOtherTeamInfoLevel = CreateConVar(	"sm_votekick_otherteam_info_level",	"1",			"Amount of information provided to the other team (Versus) (0 - Everything / 1 - Little / 2 - Somewhat more)", CVAR_FLAGS );	
 	
 	AutoExecConfig(true,				"sm_votekick");
 	
@@ -909,7 +913,7 @@ public int Menu_Reason(Menu menu, MenuAction action, int initiator, int iReason)
 int GetRealClientCount() {
 	int cnt;
 	for( int i = 1; i <= MaxClients; i++ )
-		if( IsClientInGame(i) && !IsFakeClient(i) ) cnt++;
+		if( IsClientInGame(i) && ( !IsFakeClient(i) || g_bCvarShowBots ) ) cnt++;
 	return cnt;
 }
 
@@ -918,7 +922,7 @@ int GetRealClientCount() {
 int GetRealTeamClientCount(int iTeam) {
 	int cnt;
 	for( int i = 1; i <= MaxClients; i++ )
-		if( IsClientInGame(i) && !IsFakeClient(i) && GetClientTeam(i) == iTeam ) cnt++; //Versus: get only number of members of team of initiator of votekick
+		if( IsClientInGame(i) && ( !IsFakeClient(i) || g_bCvarShowBots ) && GetClientTeam(i) == iTeam ) cnt++; //Versus: get only number of members of team of initiator of votekick
 	return cnt;
 }
 
@@ -1215,7 +1219,7 @@ void StartVoteKick(int initiator, int target)
 		// Msg to other team
 		if ( g_bIsVersus && g_iCvarVsOtherTeamInfoLevel == 2)
 			// vote_started_otherteam -- added to phrases.txt in v5.0
-			CPrintToChatTeam(GetOppositeTeam(iTeam), "%t", "vote_started_otherteam", g_sName);
+			CPrintToChatTeam(GetOppositeTeam(iTeam), "%t", "vote_started_otherteam");
 
 		CPrintHintTextToTeam( iTeam, "%t\n(%t: %t)", "vote_started_announce", g_sName, "Reason_Menu", sReasonEng);
 	}
@@ -1235,7 +1239,7 @@ void StartVoteKick(int initiator, int target)
 			
 		// Msg to other team
 		if ( g_bIsVersus && g_iCvarVsOtherTeamInfoLevel == 2 )
-			CPrintToChatTeam(GetOppositeTeam(iTeam), "%t", "vote_started_otherteam", g_sName);
+			CPrintToChatTeam(GetOppositeTeam(iTeam), "%t", "vote_started_otherteam");
 
 		CPrintHintTextToTeam( iTeam, "%t", "vote_started_announce", g_sName );
 	}

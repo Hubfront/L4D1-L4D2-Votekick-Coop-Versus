@@ -9,7 +9,7 @@ Description:
 Features:
 
     - *New* ability to control the amount of information given to the opposing team via the kickvote message (Versus gamemode)
-	- *New* Possibility to configure whether the initiator of the kickvote is mentioned or not (all game modes)
+	- *New* ability to control whether the initiator of the kickvote is mentioned or not (all game modes)
 	- full support for both game modes: Co-op and Versus (L4D1 & L4D2)
     - prevents a serious vote kick exploit in the official L4D1 kick vote: A kick from a successful vote has no effect if the kicked player leaves the game shortly before the vote ends. Some players exploit this to disrupt other players' gameplay.
     - the kick vote is now kept as short as possible (version 4.5): the vote of the initiator of the vote and the vote of the player to be kicked who is not inactive are cast automatically (similar to the official L4D behavior).
@@ -73,7 +73,7 @@ Settings (ConVars):
 
     - sm_votekick_delay - def.: 60 - Minimum delay (in sec.) allowed between votes
     - sm_votekick_timeout - def.: 10 - How long (in sec.) does the vote last
-    - sm_votekick_announcedelay - def.: 2.0 - Delay (in sec.) between announce and vote menu appearing
+    - sm_votekick_announcedelay - def.: 0.0 - Delay (in sec.) between announce and vote menu appearing
     - sm_votekick_kicktime - def.: 3600 - How long player will be kicked (in sec.)
     - sm_votekick_minplayers - def.: 1 - Minimum players present in game to allow starting vote for kick
     - sm_votekick_minplayers_versus - def.: 1 - Minimum players present in team to allow starting vote for kick (Versus gamemode)
@@ -88,7 +88,7 @@ Settings (ConVars):
     - sm_votekick_use_banfile_log - def.: 1 - File based temporary bans: log attempts to join the server? (1 - Yes / 0 - No)
     - sm_votekick_versus_inactive_time - def.: 45 - Time (in sec.) after which an inactive player is considered AFK. In a kick vote against him, he can then only vote manually
 	- sm_votekick_initiator_anonymous - def.: 1 - Should the initiator of the kickvote remain anonymous? (1 - Yes / 0 - No)
-	- sm_votekick_otherteam_info_level - def.: 1 -  Information level for the other team (Versus) (0 - Everything / 1 - Little / 2 - Somewhat more)
+	- sm_votekick_otherteam_info_level - def.: 1 - Amount of information provided to the other team (Versus) (0 - Everything / 1 - Little / 2 - Somewhat more)
 
 Commands:
 

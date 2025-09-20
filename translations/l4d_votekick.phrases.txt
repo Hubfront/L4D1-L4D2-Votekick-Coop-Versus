@@ -61,7 +61,7 @@
 	}
 	"vote_started_otherteam"
 	{
-		"en"		"The other team started a vote to kick %s.\n"
+		"en"		"The opposing team began a vote on whether to expel a team member.\n"
 	}
 	"vote_started_unkick"
 	{

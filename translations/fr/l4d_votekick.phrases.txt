@@ -61,7 +61,7 @@
 	}
 	"vote_started_otherteam"
 	{
-		"fr"		"L'autre équipe a lancé un vote pour expulser %s."
+		"fr"		"L'équipe adverse a commencé à voter pour savoir s'il fallait expulser un joueur."
 	}
 	"vote_started_unkick"
 	{

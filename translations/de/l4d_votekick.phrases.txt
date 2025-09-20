@@ -61,11 +61,19 @@
 	}
 	"vote_started_otherteam"
 	{
-		"de"		"Das andere Team hat eine Abstimmung zum Rauswurf von %s gestartet.\n"
+		"de"		"Das andere Team hat eine Abstimmung zum Rauswurf eines Mitspielers gestartet.\n"
 	}
 	"vote_started_unkick"
 	{
 		"de"		"{cyan}%N {white}hat eine Abstimmung gestartet, um die Sperre von {cyan}%s{white} aufzuheben"
+	}
+	"vote_started_unkick_anonymous_initiator"
+	{
+		"de"		"Eine Abstimmung zum Aufheben des Rauswurfs von {cyan}%s{white} wurde gestartet.\n"
+	}
+	"vote_started_unkick_otherteam"
+	{
+		"de"		"Das andere Team hat eine Abstimmung zur Aufhebung des Rauswurfs von {cyan}%s{white} gestartet."
 	}
 	"Yes"
 	{

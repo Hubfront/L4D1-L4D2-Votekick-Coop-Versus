@@ -61,7 +61,7 @@
 	}
 	"vote_started_otherteam"
 	{
-		"es"		"El otro equipo ha iniciado una votación para expulsar a %s."
+		"es"		"El equipo contrario ha comenzado a votar sobre si expulsar a un jugador."
 	}
 	"vote_started_anonymous"
 	{

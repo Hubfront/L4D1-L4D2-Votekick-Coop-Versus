@@ -61,7 +61,7 @@
 	}
 	"vote_started_otherteam"
 	{
-		"chi"		"对方球队已开始对 %s 的驱逐进行投票。"
+		"chi"		"对方球队已开始投票决定是否踢出一名球员。"
 	}
 	"vote_started_unkick"
 	{
