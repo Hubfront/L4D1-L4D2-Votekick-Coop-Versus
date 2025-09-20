@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "5.0_RC2"
+#define PLUGIN_VERSION "5.0"
 
 #pragma newdecls required
 #pragma semicolon 1
@@ -196,13 +196,13 @@ public Plugin myinfo =
 	 - E.g. copying translations/es/l4d_votekick.phrases.txt to addons/sourcemod/translations/es/l4d_votekick.phrases.txt for the Spanish translation. 
 	 - For information about the new ( as of SourceMod 1.1 ) preferred method of shipping translations, see https://wiki.alliedmods.net/Translations_(SourceMod_Scripting) 
 
-	5.0_RC2 20-Sep-2025)
-	 - New feature for Versus: Ability to control the amount of information given to the opposing team via the kickvote message.
-	   Setting the convar to 0 provides the same information to the opposing team.
-	   Setting the convar sm_votekick_otherteam_info_level to 1 or 2 limits the amount of information the opposing team receives about the kick vote of the team that initiated the vote. 
-	 - New feature (all game modes): Possibility to configure whether the initiator of the kickvote is mentioned or not
-	   If you set Convar sm_votekick_initiator_anonymous to 1, the initiator of the kickvote will not be mentioned.
-	 - CVARS defaults changed. Reason: more direct voting
+	5.0 (20-Sep-2025)
+	 - * New * Ability to control the amount of information given to the opposing team via the kickvote message (Versus gamemode).
+	   Setting the convar sm_votekick_otherteam_info_level to 0: the opposing team receives the same information as the team of the kickvote initiator ("Everything").
+	   Setting the convar sm_votekick_otherteam_info_level to 1 or 2 limits the amount of information the opposing team receives about the kick vote of the team that initiated the vote ( 1: "Little"; 2: "Somewhat more"). 
+	 - * New * Ability to control whether the initiator of the kickvote is mentioned or not (all game modes)
+	   If you set the conversion variable sm_votekick_initiator_anonymous to 1, the initiator of the kickvote will not be mentioned.
+	 - CVARS defaults changed. Reason: faster voting
 	   * sm_votekick_announcedelay defaults to "0.0" (previously "2.0")
 	 Bugfixes:
 	 - Fixed a bug where the number of bots was not displayed in the voting result if the ConVar "sm_votekick_show_bots" was set to "1"
@@ -213,9 +213,9 @@ public Plugin myinfo =
 	 - Updated language files with new phrases for the new functionalities
 	 - Linguistic corrections/improvements
 	 Compatibility with translation files of previous versions:
-	 - This version (v5.X) is not compatible with language files of previous versions (v4.X, v3.X, etc.)
-	 - * Mandatory *: English translation file. For this plugin to work properly, you need to copy the English translation file of this version in translations/l4d_votekick.phrases.txt to addons/sourcemod/translations/l4d_votekick.phrases.txt.
-	 - Optionally: You can add additional language files located in the subdirectories of the translations/ package directory to addons/sourcemod/translations/.
+	 - This version (v5.X) is not compatible with language files of previous versions (v4.X, v3.X, etc.) anymore.
+	 - Mandatory: English translation file: for this plugin to work properly, you need to copy the English translation file of this version in translations/l4d_votekick.phrases.txt to addons/sourcemod/translations/l4d_votekick.phrases.txt.
+	 - Optionally, you may add additional language files located in the subdirectories of the translations/ package directory to addons/sourcemod/translations/.
 	 - E.g. copying translations/es/l4d_votekick.phrases.txt to addons/sourcemod/translations/es/l4d_votekick.phrases.txt for the Spanish translation. 
 	 Minor changes:
 	 - Updated description
