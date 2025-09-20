@@ -61,7 +61,7 @@
 	}
 	"vote_started_otherteam"
 	{
-		"de"		"Das andere Team hat eine Abstimmung zum Rauswurf eines Mitspielers gestartet.\n"
+		"de"		"Das andere Team hat eine Kickvote gestartet.\n"
 	}
 	"vote_started_unkick"
 	{
