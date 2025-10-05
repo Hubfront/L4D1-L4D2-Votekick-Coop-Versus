@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "5.0"
+#define PLUGIN_VERSION "5.1"
 
 #pragma newdecls required
 #pragma semicolon 1
@@ -219,6 +219,12 @@ public Plugin myinfo =
 	 - E.g. copying translations/es/l4d_votekick.phrases.txt to addons/sourcemod/translations/es/l4d_votekick.phrases.txt for the Spanish translation. 
 	 Minor changes:
 	 - Updated description
+
+	5.1 (05-Oct-2025)
+	 Bugfixes:
+	 - Fixed a bug where, in rare cases, the detailed result of a vote was displayed to the wrong team (Versus)
+	 CVARS defaults changed. Reason: more information about voting for the opposing team (Versus)
+	   * sm_votekick_otherteam_info_level to "2" (previously "1")
 	 
 	Please note: for completeness, the following changelog has been copied from Dragokas' plugin "[L4D] Votekick (no black screen)", version 3.5.
 
@@ -344,7 +350,7 @@ ArrayList g_hArrayVoteBlock, g_hArrayVoteReason;
 StringMap hMapSteam, hMapPlayerName, hMapPlayerTeam, hMapBanStart, hMapBanStop, hMapBanSelfnote;
 Regex hRegexSteamid, hRegexDigitsZero, hRegexDigits, hRegexStrDhm;
 char g_sSteam[64], g_sIP[32], g_sCountry[4], g_sName[MAX_NAME_LENGTH], g_sLog[PLATFORM_MAX_PATH];
-int g_iKickUserId, g_iInitiatorUserId, g_iLastTime[MAXPLAYERS+1], g_iKickTarget[MAXPLAYERS+1], g_iReason, g_iVoteInitiatorTeam, g_iTime_Offset[MAXPLAYERS+1], g_iLastbuttons[MAXPLAYERS+1], g_iNum_Clients;
+int g_iKickUserId, g_iInitiatorUserId, g_iLastTime[MAXPLAYERS+1], g_iKickTarget[MAXPLAYERS+1], g_iReason, g_iVoteInitiatorLogicalTeam, g_iTime_Offset[MAXPLAYERS+1], g_iLastbuttons[MAXPLAYERS+1], g_iNum_Clients;
 bool g_bVeto, g_bVotepass, g_bVoteInProgress, g_bVoteDisplayed, g_bTooOften[MAXPLAYERS+1], g_bIsVersus, g_bRegexExists = false, g_bTargetManualVote, g_bVoteNoButtonPressed ;
 
 // ConVars
@@ -1132,7 +1138,7 @@ void VoteResultsDisplay(int yesVotes, int noVotes, int num_votes = 0, int num_cl
 	//
 	if( g_bCvarShowVoteDetails && (!g_bVotepass || !g_bVeto) )
 		if( g_bIsVersus && g_iCvarVsOtherTeamInfoLevel > 0 ) 
-			CPrintToChatTeam( g_iVoteInitiatorTeam, "%t", "detailed_vote_results", yesVotes, noVotes, (num_clients-num_votes) );
+			CPrintToChatTeam( GetClientTeamOfLogical(g_iVoteInitiatorLogicalTeam), "%t", "detailed_vote_results", yesVotes, noVotes, (num_clients-num_votes) );
 		else
 			CPrintToChatAll( "%t", "detailed_vote_results", yesVotes, noVotes, (num_clients-num_votes) );
 
@@ -1167,8 +1173,9 @@ void StartVoteKick(int initiator, int target)
 	g_bVeto = false;
 	g_bVoteDisplayed = false;
 	
-	// Update the global variable before CPrintHintTextToTeam to fix the bug, when the global variable g_iVoteInitiatorTeam contained the wrong team id of a previous vote
-	int iTeam = g_iVoteInitiatorTeam = GetClientTeam(initiator); 
+	// Update the global variable before CPrintHintTextToTeam to fix the bug, when the global variable g_iVoteInitiatorLogicalTeam contained the wrong team id of a previous vote
+	int iTeam = GetClientTeam(initiator);
+	g_iVoteInitiatorLogicalTeam = GetLogicalTeam(iTeam);
 
 	// If the target is inactive, there is no passive vote in his favor against his expulsion, but the target must actively participate in the vote
 	//	
@@ -1221,7 +1228,7 @@ void StartVoteKick(int initiator, int target)
 		// Msg to other team
 		if ( g_bIsVersus && g_iCvarVsOtherTeamInfoLevel == 2)
 			// vote_started_otherteam -- added to phrases.txt in v5.0
-			CPrintToChatTeam(GetOppositeTeam(iTeam), "%t", "vote_started_otherteam");
+			CPrintToChatTeam(GetOppositeClientTeam(iTeam), "%t", "vote_started_otherteam");
 
 		CPrintHintTextToTeam( iTeam, "%t\n(%t: %t)", "vote_started_announce", g_sName, "Reason_Menu", sReasonEng);
 	}
@@ -1241,7 +1248,7 @@ void StartVoteKick(int initiator, int target)
 			
 		// Msg to other team
 		if ( g_bIsVersus && g_iCvarVsOtherTeamInfoLevel == 2 )
-			CPrintToChatTeam(GetOppositeTeam(iTeam), "%t", "vote_started_otherteam");
+			CPrintToChatTeam(GetOppositeClientTeam(iTeam), "%t", "vote_started_otherteam");
 
 		CPrintHintTextToTeam( iTeam, "%t", "vote_started_announce", g_sName );
 	}
@@ -1297,11 +1304,12 @@ void StartVoteUnKick(int initiator, char[] sSteam)
 	g_bVotepass = false;
 	g_bVeto = false;
 	g_bVoteDisplayed = false;
-	int iTeam = g_iVoteInitiatorTeam = GetClientTeam(initiator);
+	int iTeam = GetClientTeam(initiator);
+	g_iVoteInitiatorLogicalTeam = GetLogicalTeam(iTeam);
 
 	if ( g_bIsVersus && g_iCvarVsOtherTeamInfoLevel > 0 )
 		// vote_started_unkick_otherteam -- added to phrases.txt in v5.0
-		CPrintToChatTeam( GetOppositeTeam(iTeam), "%t", "vote_started_unkick_otherteam", g_sName);
+		CPrintToChatTeam( GetOppositeClientTeam(iTeam), "%t", "vote_started_unkick_otherteam", g_sName);
 	else if ( g_bCvarInitiatorAnonymous )
 		// vote_started_unkick_anonymous_initiator -- added to phrases.txt in v5.0
 		CPrintToChatAll("%t", "vote_started_unkick_anonymous_initiator", g_sName); // A vote to un-kick {cyan}%s{white} has been started.
@@ -1350,10 +1358,11 @@ Action Timer_VoteDelayed(Handle timer, Menu menu)
 			
 			if( g_bIsVersus )
 			{
-				
+				int iVoteInitiatorClientTeam = GetClientTeamOfLogical(g_iVoteInitiatorLogicalTeam);
+
 				for( int i = 1; i <= MaxClients; i++ )
 				{
-					if( IsClientInGame(i) && GetClientTeam(i) == g_iVoteInitiatorTeam )
+					if( IsClientInGame(i) && GetClientTeam(i) == iVoteInitiatorClientTeam )
 					{
 						if ( i != target && i != initiator ) iClients[iCount++] = i;
 						else if ( g_bTargetManualVote ) 
@@ -1463,9 +1472,12 @@ void Handler_PostVoteAction(bool bVoteSuccess)
 		}
 	}
 	else {
+		int iVoteInitiatorClientTeam = GetClientTeamOfLogical(g_iVoteInitiatorLogicalTeam);
+
 		if( bVoteSuccess ) {
 			char sTime[32], sReasonEng[32];
 			int iTarget = GetClientOfUserId(g_iKickUserId);
+			
 			//initialize sReasonEng here, in case IsClientInGame(iTarget) == false (e.g. target timed out in the meantime or immediately disconnected by intention, in that case SM would throw an error later in CPrintToChatAll below: "Language phrase "" not found (arg 6)")
 			if( g_bCvarShowKickReason )
 				GetReason(sReasonEng, sizeof(sReasonEng));
@@ -1474,19 +1486,19 @@ void Handler_PostVoteAction(bool bVoteSuccess)
 				{
 					if ( g_bIsVersus && g_iCvarVsOtherTeamInfoLevel > 0 )
 					{
-						CPrintToChatTeam(g_iVoteInitiatorTeam, "%t. %t %t", "vote_success", g_sName, "Reason", sReasonEng);
+						CPrintToChatTeam( iVoteInitiatorClientTeam, "%t. %t %t", "vote_success", g_sName, "Reason", sReasonEng );
 						// vote_success_otherteam -- added to phrases.txt in v5.0
-						CPrintToChatTeam(GetOppositeTeam(g_iVoteInitiatorTeam), "%t", "vote_success_otherteam", g_sName);
+						CPrintToChatTeam( GetOppositeClientTeam( iVoteInitiatorClientTeam ), "%t", "vote_success_otherteam", g_sName );
 					}
 					else {
-						CPrintToChatAll("%t. %t %t", "vote_success", g_sName, "Reason", sReasonEng);
+						CPrintToChatAll( "%t. %t %t", "vote_success", g_sName, "Reason", sReasonEng );
 					}
 				}
 				else {
 					if ( g_bIsVersus && g_iCvarVsOtherTeamInfoLevel > 0 )
 					{
-						CPrintToChatTeam(g_iVoteInitiatorTeam, "%t", "vote_success", g_sName);
-						CPrintToChatTeam(GetOppositeTeam(g_iVoteInitiatorTeam), "%t", "vote_success_otherteam", g_sName);
+						CPrintToChatTeam( iVoteInitiatorClientTeam, "%t", "vote_success", g_sName );
+						CPrintToChatTeam( GetOppositeClientTeam( iVoteInitiatorClientTeam ), "%t", "vote_success_otherteam", g_sName );
 					}
 					else {
 						CPrintToChatAll("%t", "vote_success", g_sName);
@@ -1501,7 +1513,7 @@ void Handler_PostVoteAction(bool bVoteSuccess)
 			FormatEx(sTime, sizeof(sTime), "%i", GetTime());
 			hMapSteam.SetString(g_sSteam, sTime, true);
 			hMapPlayerName.SetString(g_sSteam, g_sName, true);
-			hMapPlayerTeam.SetValue(g_sSteam, GetLogicalTeam(g_iVoteInitiatorTeam), true);
+			hMapPlayerTeam.SetValue(g_sSteam, g_iVoteInitiatorLogicalTeam, true);
 			
 			LogVoteAction(0, "[KICKED]");
 
@@ -1510,12 +1522,12 @@ void Handler_PostVoteAction(bool bVoteSuccess)
 			LogVoteAction(0, "[NOT ACCEPTED]");
 			
 			if ( g_bIsVersus && g_iCvarVsOtherTeamInfoLevel == 2 ) {
-				CPrintToChatTeam(g_iVoteInitiatorTeam, "%t", "vote_failed");
+				CPrintToChatTeam( iVoteInitiatorClientTeam, "%t", "vote_failed" );
 				// vote_failed_otherteam -- added to phrases.txt in v5.0
-				CPrintToChatTeam(GetOppositeTeam(g_iVoteInitiatorTeam), "%t", "vote_failed_otherteam");
+				CPrintToChatTeam(GetOppositeClientTeam( iVoteInitiatorClientTeam ), "%t", "vote_failed_otherteam");
 			}
 			else if ( g_bIsVersus && g_iCvarVsOtherTeamInfoLevel == 1 )
-				CPrintToChatTeam(g_iVoteInitiatorTeam, "%t", "vote_failed");
+				CPrintToChatTeam( iVoteInitiatorClientTeam, "%t", "vote_failed" );
 			else if ( !g_bIsVersus || g_iCvarVsOtherTeamInfoLevel == 0 )
 				CPrintToChatAll("%t", "vote_failed");
 		}
@@ -1814,14 +1826,21 @@ void NormalizeName(char[] name, int len)
 // client team number (0=spectator,1=survivor,2=zombie), which may change with the next map (here iTeam). 
 // Requires to include sdktools_gamerules (included in SM). https://forums.alliedmods.net/showthread.php?t=282369
 //
-int GetLogicalTeam(int iTeam)
+int GetLogicalTeam(int iClientTeam)
 {
-    return (iTeam ^ GameRules_GetProp("m_bAreTeamsFlipped", 1)) - 1;
+    return (iClientTeam ^ GameRules_GetProp("m_bAreTeamsFlipped", 1)) - 1;
 }  
+
+// Reverse function of GetLogicalTeam()
+//
+int GetClientTeamOfLogical(int iLogicalTeam)
+{
+    return (iLogicalTeam + 1) ^ GameRules_GetProp("m_bAreTeamsFlipped", 1);
+}
 
 // Returns client team number of the opposite team
 //
-int GetOppositeTeam(int iTeam)
+int GetOppositeClientTeam(int iTeam)
 {
     if ( iTeam == 2 )
 		return 3;

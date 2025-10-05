@@ -88,7 +88,7 @@ Settings (ConVars):
     - sm_votekick_use_banfile_log - def.: 1 - File based temporary bans: log attempts to join the server? (1 - Yes / 0 - No)
     - sm_votekick_versus_inactive_time - def.: 45 - Time (in sec.) after which an inactive player is considered AFK. In a kick vote against him, he can then only vote manually
 	- sm_votekick_initiator_anonymous - def.: 1 - Should the initiator of the kickvote remain anonymous? (1 - Yes / 0 - No)
-	- sm_votekick_otherteam_info_level - def.: 1 - Amount of information provided to the other team (Versus) (0 - Everything / 1 - Little / 2 - Somewhat more)
+	- sm_votekick_otherteam_info_level - def.: 2 - Amount of information provided to the other team (Versus) (0 - Everything / 1 - Little / 2 - Somewhat more)
 
 Commands:
 
@@ -134,4 +134,4 @@ Credits:
 References:
     
     - [L4D1 & L4D2] Votekick (Co-op & Versus): https://forums.alliedmods.net/showthread.php?t=349341
-	- Github: https://github.com/Hubfront/L4D1-L4D2-Votekick-Coop-Versus
+	- [L4D1 & L4D2] Votekick (Co-op & Versus) @ Github: https://github.com/Hubfront/L4D1-L4D2-Votekick-Coop-Versus
