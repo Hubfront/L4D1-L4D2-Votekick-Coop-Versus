@@ -225,7 +225,14 @@ public Plugin myinfo =
 	 - Fixed a bug where, in rare cases, the detailed result of a vote was displayed to the wrong team (Versus)
 	 CVARS defaults changed. Reason: more information about voting for the opposing team (Versus)
 	   * sm_votekick_otherteam_info_level to "2" (previously "1")
-	 
+
+	5.2 omitted
+
+ 	5.3 (pre)
+	 Bugfixes:
+	 - A bug was fixed that allowed a self-kick even though the ConVar "sm_votekick_show_self" was set to "0".
+
+
 	Please note: for completeness, the following changelog has been copied from Dragokas' plugin "[L4D] Votekick (no black screen)", version 3.5.
 
 	"Plugin is initially based on the work of D1maxa.
@@ -944,9 +951,17 @@ bool IsVoteAllowed(int initiator, int target)
 		if( target == 0 || !IsClientInGame(target) )
 			return false;
 	
+		if( initiator == target )
+		{
+			if ( g_bCvarShowSelf )
+				return true;
+			else
+				return false;
+		}
+	
 		// This comparison does not trigger an "Exception reported: Client index -1 is invalid", but logically precedes the subsequent comparison 
-		if( initiator == target && bHasVoteAccessFlagClient )
-			return true;
+		// if( initiator == target && bHasVoteAccessFlagClient )
+		//	return true;
 	
 		if( IsClientRootAdmin(target) )
 			return false;
